@@ -27,7 +27,7 @@
         app:layout_constraintVertical_bias="0.202" />
 
     <TextView
-        android:id="@+id/RegistationText"
+        android:id="@+id/LogInExistingAccountText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
@@ -58,7 +58,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.926"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/RegistationText" />
+        app:layout_constraintTop_toBottomOf="@+id/LogInExistingAccountText" />
 
     <TextView
         android:id="@+id/emailLabel"
@@ -73,7 +73,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/EmailBox"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/RegistationText" />
+        app:layout_constraintTop_toBottomOf="@+id/LogInExistingAccountText" />
 
     <EditText
         android:id="@+id/editTextTextPassword"
@@ -133,7 +133,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
-        android:id="@+id/RegisterButton"
+        android:id="@+id/LogInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="27dp"
@@ -158,6 +158,6 @@
         android:typeface="serif"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/RegisterButton" />
+        app:layout_constraintTop_toBottomOf="@+id/LogInButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
