@@ -8,15 +8,12 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="154dp"
-        android:layout_height="118dp"
-        android:text="Hello World!"
-        android:textAlignment="center"
-        android:textColor="@color/sand_storm"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:id="@+id/uidTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UID will appear here"
+        android:textSize="18sp"
+        android:layout_centerInParent="true" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

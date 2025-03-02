@@ -68,7 +68,7 @@ class RegisterViewModel @Inject constructor (
             _registrationState.value = RegisterState.Loading
             val result = registerUseCase(emailValue, passwordValue)
             _registrationState.value = result.fold(
-                onSuccess = { RegisterState.Success("Registration successful") },
+                onSuccess = { RegisterState.Success(result.getOrNull() ?: "") },
                 onFailure = { RegisterState.Error(it.message ?: "Unknown error") }
             )
         }

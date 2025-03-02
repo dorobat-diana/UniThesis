@@ -4,14 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
+import androidx.lifecycle.lifecycleScope
+import booknest.app.MainActivity
 import booknest.app.R
-import booknest.app.feature.login.LogInActivity
 import booknest.app.feature.register.presentation.RegisterViewModel
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {
@@ -20,7 +23,6 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var password: TextInputEditText
     private lateinit var confirmPassword: TextInputEditText
     private lateinit var registrationButton: Button
-    private lateinit var loginButton: Button
     private lateinit var progressBar: ProgressBar
 
     private val viewModel: RegisterViewModel by viewModels()
@@ -31,6 +33,7 @@ class RegisterActivity : AppCompatActivity() {
 
         initializeViews()
         setupListeners()
+        observeRegistrationState()
     }
 
     private fun initializeViews() {
@@ -38,7 +41,6 @@ class RegisterActivity : AppCompatActivity() {
         password = findViewById(R.id.editTextPassword)
         confirmPassword = findViewById(R.id.editTextConfirmPassword)
         registrationButton = findViewById(R.id.RegisterButton)
-        loginButton = findViewById(R.id.LogInButton)
         progressBar = findViewById(R.id.progressBar)
     }
 
@@ -58,12 +60,55 @@ class RegisterActivity : AppCompatActivity() {
             viewModel.onEvent(RegisterEvent.SubmitRegistration)
         }
 
-        loginButton.setOnClickListener { navigateToLoginScreen() }
     }
 
+    private fun observeRegistrationState() {
+        lifecycleScope.launch {
+            viewModel.registrationState.collect { state ->
+                when (state) {
+                    is RegisterState.Loading -> {
+                        progressBar.visibility = ProgressBar.VISIBLE
+                        registrationButton.isEnabled = false
+                    }
+                    is RegisterState.Success -> {
+                        progressBar.visibility = ProgressBar.INVISIBLE
+                        registrationButton.isEnabled = true
+                        showSuccessMessage("Registration successful")
+                        saveUserUID(state.uid)
+                        navigateToMainActivity(state.uid)
+                        finish()
+                    }
+                    is RegisterState.Error -> {
+                        progressBar.visibility = ProgressBar.INVISIBLE
+                        registrationButton.isEnabled = true
+                        showErrorMessage(state.message)
+                    }
+                    else -> {
+                        progressBar.visibility = ProgressBar.INVISIBLE
+                    }
+                }
+            }
+        }
+    }
 
-    private fun navigateToLoginScreen() {
-        startActivity(Intent(this, LogInActivity::class.java))
-        finish()
+    private fun showErrorMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showSuccessMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
+    private fun saveUserUID(uid: String) {
+        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("USER_UID", uid)
+        editor.apply()
+    }
+
+    private fun navigateToMainActivity(uid: String) {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("USER_UID", uid)
+        startActivity(intent)
     }
 }
