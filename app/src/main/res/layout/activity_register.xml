@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
         android:fontFamily="serif"
-        android:text="Create new Account"
+        android:text="@string/create_new_account"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textStyle="italic"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,40 +48,75 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/book_icon_transparent_27" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/EmailBox"
-        android:layout_width="285dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="28dp"
+        android:layout_width="290dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
-        android:inputType="text|textEmailAddress|textAutoComplete"
+        android:inputType="textEmailAddress"
+        android:hint="@string/enter_email"
+        app:boxStrokeColor="@color/cinammon"
+        app:hintTextColor="@color/cinammon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LogInExistingAccountText" />
+        app:layout_constraintTop_toBottomOf="@+id/LogInExistingAccountText" >
 
-    <EditText
-        android:id="@+id/editTextTextPassword"
-        android:layout_width="277dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="24dp"
-        android:ems="10"
-        android:inputType="textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.485"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EmailBox" />
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="290dp"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <EditText
-        android:id="@+id/editTextTextPassword2"
-        android:layout_width="288dp"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/PasswordBox"
+        android:layout_width="290dp"
         android:layout_height="59dp"
         android:layout_marginTop="20dp"
         android:ems="10"
         android:inputType="textPassword"
+        android:hint="@string/enter_password"
+        app:passwordToggleEnabled = "true"
+        app:boxStrokeColor="@color/cinammon"
+        app:hintTextColor="@color/cinammon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/EmailBox" >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="290dp"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/PasswordBox2"
+        android:layout_width="290dp"
+        android:layout_height="59dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:inputType="textPassword"
+        android:hint="@string/confirm_password"
+        app:passwordToggleEnabled = "true"
+        app:boxStrokeColor="@color/cinammon"
+        app:hintTextColor="@color/cinammon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/PasswordBox" >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextConfirmPassword"
+            android:layout_width="290dp"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:inputType="textPassword" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/RegisterButton"
@@ -95,7 +130,7 @@
         app:iconTint="@color/caramel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword2"
+        app:layout_constraintTop_toBottomOf="@+id/PasswordBox2"
         app:rippleColor="@color/caramel" />
 
     <ProgressBar

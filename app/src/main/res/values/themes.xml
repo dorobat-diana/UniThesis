@@ -19,7 +19,15 @@
         <!-- Text appearance -->
         <item name="android:textColorPrimary">@color/sand_storm</item>
 
-        <!-- Default font -->
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/caramel</item>
+
+        <!-- For Material 3 -->
+        <item name="android:colorPrimaryDark">@color/caramel</item>
+        <!-- Fix focus color for TextInputLayout -->
+        <item name="colorControlActivated">@color/cinammon</item>
+        <item name="colorControlNormal">@color/cinammon</item>
+        <item name="colorControlHighlight">@color/cinammon</item>
 
     </style>
 </resources>

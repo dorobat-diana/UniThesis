@@ -4,4 +4,25 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+    <style name="Theme.BookNestApp" parent="Base.Theme.BookNestApp" >
+
+        <!-- Background -->
+        <item name="android:windowBackground">@color/leafy</item>
+
+        <!-- App bar color -->
+        <item name="colorSurface">@color/cinammon</item>
+
+        <!-- Button color -->
+        <item name="colorAccent">@color/caramel</item>
+
+        <!-- Text appearance -->
+        <item name="android:textColorPrimary">@color/sand_storm</item>
+
+        <!-- Default font -->
+        <!-- Fix focus color for TextInputLayout -->
+        <item name="colorControlActivated">@color/cinammon</item>
+        <item name="colorControlNormal">@color/cinammon</item>
+        <item name="colorControlHighlight">@color/cinammon</item>
+
+    </style>
 </resources>
