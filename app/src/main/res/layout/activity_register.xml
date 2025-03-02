@@ -67,7 +67,7 @@
             android:layout_width="290dp"
             android:layout_height="match_parent"
             android:ems="10"
-            android:inputType="textPassword" />
+            android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout

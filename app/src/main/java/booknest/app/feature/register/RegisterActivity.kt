@@ -11,7 +11,9 @@ import booknest.app.R
 import booknest.app.feature.login.LogInActivity
 import booknest.app.feature.register.presentation.RegisterViewModel
 import com.google.android.material.textfield.TextInputEditText
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var email: TextInputEditText
