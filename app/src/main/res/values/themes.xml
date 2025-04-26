@@ -8,7 +8,7 @@
     <style name="Theme.BookNestApp" parent="Base.Theme.BookNestApp" >
 
         <!-- Background -->
-        <item name="android:windowBackground">@color/leafy</item>
+        <item name="android:windowBackground">@color/yellow</item>
 
         <!-- App bar color -->
         <item name="colorSurface">@color/cinammon</item>

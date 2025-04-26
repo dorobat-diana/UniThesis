@@ -2,9 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="leafy">#A3966A</color>
-    <color name="caramel">#895D2B</color>
-    <color name="espresso">#482E1D</color>
-    <color name="sand_storm">#F0DAAE</color>
-    <color name="cinammon">#90553C</color>
+    <color name="yellow">#DC943C2A</color>
+    <color name="caramel">#C85030</color>
+    <color name="espresso">#C85030</color>
+    <color name="sand_storm">#FBE8DA</color>
+    <color name="cinammon">#FBE8DA</color>
 </resources>

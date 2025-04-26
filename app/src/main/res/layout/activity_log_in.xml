@@ -14,11 +14,12 @@
       android:layout_marginStart="172dp"
       android:layout_marginTop="78dp"
       android:layout_marginEnd="181dp"
-      android:fontFamily="serif"
+      android:fontFamily="cursive"
       android:text="@string/app_name"
       android:textAppearance="@style/TextAppearance.AppCompat.Large"
+      android:textColor="@color/cinammon"
       android:textSize="34sp"
-      android:textStyle="bold|italic"
+      android:textStyle="bold"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.45"
@@ -31,22 +32,25 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="18dp"
-      android:fontFamily="serif"
+      android:fontFamily="cursive"
       android:text="LogIn into existing account"
       android:textAppearance="@style/TextAppearance.AppCompat.Large"
-      android:textStyle="italic"
+      android:textColor="@color/cinammon"
+      android:textSize="24sp"
+      android:textStyle="bold|italic"
+      android:typeface="normal"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/AppName" />
 
   <ImageView
-      android:id="@+id/BookLogo"
+      android:id="@+id/AirplaneLogo"
       android:layout_width="93dp"
       android:layout_height="83dp"
       app:layout_constraintBottom_toTopOf="@+id/AppName"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:srcCompat="@drawable/book_icon_transparent_27" />
+      app:srcCompat="@drawable/airplane" />
 
   <com.google.android.material.textfield.TextInputLayout
       android:id="@+id/EmailBox"
@@ -54,20 +58,25 @@
       android:layout_height="59dp"
       android:layout_marginTop="20dp"
       android:ems="10"
-      android:inputType="textEmailAddress"
       android:hint="@string/enter_email"
+      android:inputType="textEmailAddress"
       app:boxStrokeColor="@color/cinammon"
       app:hintTextColor="@color/cinammon"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/LogInExistingAccountText" >
+      app:layout_constraintTop_toBottomOf="@+id/LogInExistingAccountText">
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editTextEmail"
         android:layout_width="290dp"
         android:layout_height="match_parent"
         android:ems="10"
-        android:inputType="textEmailAddress" />
+        android:fontFamily="sans-serif-light"
+        android:inputType="textEmailAddress"
+        android:textColor="@color/cinammon"
+        android:textColorHighlight="@color/cinammon"
+        android:textColorHint="@color/cinammon"
+        android:textColorLink="@color/cinammon" />
   </com.google.android.material.textfield.TextInputLayout>
 
   <com.google.android.material.textfield.TextInputLayout
@@ -91,7 +100,9 @@
         android:layout_width="290dp"
         android:layout_height="match_parent"
         android:ems="10"
-        android:inputType="textPassword" />
+        android:fontFamily="sans-serif-light"
+        android:inputType="textPassword"
+        android:textColor="@color/cinammon" />
   </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -103,7 +114,7 @@
       android:backgroundTint="@color/caramel"
       android:text="LogIn"
       android:textAppearance="@style/TextAppearance.AppCompat.Large"
-      android:textColor="@color/sand_storm"
+      android:textColor="@color/cinammon"
       app:iconTint="@color/caramel"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
@@ -124,9 +135,9 @@
       android:text="Don't have an account? Register here"
       android:textAppearance="@style/Theme.BookNestApp"
       android:textColor="@color/cinammon"
-      android:textColorHighlight="@color/espresso"
+      android:textColorHighlight="@color/caramel"
       android:textColorHint="@color/caramel"
-      android:textColorLink="@color/espresso"
+      android:textColorLink="@color/caramel"
       android:textSize="16sp"
       android:textStyle="italic"
       app:layout_constraintBottom_toBottomOf="parent"
