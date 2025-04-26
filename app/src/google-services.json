@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "516125699060",
+    "project_id": "book-nest-app-thesis",
+    "storage_bucket": "book-nest-app-thesis.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:516125699060:android:af3e963e8d256b733327a1",
+        "android_client_info": {
+          "package_name": "booknest.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsyX9IKE6MYNu1VdKd5fFM8GI3U0D3q3w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
