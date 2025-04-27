@@ -14,7 +14,7 @@
         android:layout_marginStart="172dp"
         android:layout_marginTop="78dp"
         android:layout_marginEnd="181dp"
-        android:fontFamily="serif"
+        android:fontFamily="cursive"
         android:text="@string/app_name"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="34sp"
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
-        android:fontFamily="serif"
+        android:fontFamily="cursive"
         android:text="@string/create_new_account"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textStyle="italic"
@@ -46,7 +46,7 @@
         app:layout_constraintBottom_toTopOf="@+id/AppName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/book_icon_transparent_27" />
+        app:srcCompat="@drawable/airplane" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/EmailBox"
@@ -56,8 +56,10 @@
         android:ems="10"
         android:inputType="textEmailAddress"
         android:hint="@string/enter_email"
-        app:boxStrokeColor="@color/cinammon"
-        app:hintTextColor="@color/cinammon"
+        android:textColor="@color/cinammon"
+        android:textColorHighlight="@color/cinammon"
+        android:textColorHint="@color/cinammon"
+        android:textColorLink="@color/cinammon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/LogInExistingAccountText" >
@@ -67,6 +69,11 @@
             android:layout_width="290dp"
             android:layout_height="match_parent"
             android:ems="10"
+            android:fontFamily="cursive"
+            android:textColor="@color/cinammon"
+            android:textColorHighlight="@color/cinammon"
+            android:textColorHint="@color/cinammon"
+            android:textColorLink="@color/cinammon"
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,8 +86,10 @@
         android:inputType="textPassword"
         android:hint="@string/enter_password"
         app:passwordToggleEnabled = "true"
-        app:boxStrokeColor="@color/cinammon"
-        app:hintTextColor="@color/cinammon"
+        android:textColor="@color/cinammon"
+        android:textColorHighlight="@color/cinammon"
+        android:textColorHint="@color/cinammon"
+        android:textColorLink="@color/cinammon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="parent"
@@ -91,6 +100,11 @@
             android:layout_width="290dp"
             android:layout_height="match_parent"
             android:ems="10"
+            android:fontFamily="cursive"
+            android:textColor="@color/cinammon"
+            android:textColorHighlight="@color/cinammon"
+            android:textColorHint="@color/cinammon"
+            android:textColorLink="@color/cinammon"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -103,8 +117,10 @@
         android:inputType="textPassword"
         android:hint="@string/confirm_password"
         app:passwordToggleEnabled = "true"
-        app:boxStrokeColor="@color/cinammon"
-        app:hintTextColor="@color/cinammon"
+        android:textColor="@color/cinammon"
+        android:textColorHighlight="@color/cinammon"
+        android:textColorHint="@color/cinammon"
+        android:textColorLink="@color/cinammon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
@@ -115,6 +131,11 @@
             android:layout_width="290dp"
             android:layout_height="match_parent"
             android:ems="10"
+            android:fontFamily="cursive"
+            android:textColor="@color/cinammon"
+            android:textColorHighlight="@color/cinammon"
+            android:textColorHint="@color/cinammon"
+            android:textColorLink="@color/cinammon"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -127,6 +148,7 @@
         android:text="Register"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textColor="@color/sand_storm"
+        android:fontFamily="cursive"
         app:iconTint="@color/caramel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
