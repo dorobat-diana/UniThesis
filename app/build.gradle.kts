@@ -75,4 +75,17 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.navigation.compose)
+
+    // Firebase Firestore
+    implementation(libs.firebase.firestore.ktx)
+
+    // Firebase Storage
+    implementation(libs.firebase.storage.ktx)
+
+    //images
+    implementation(libs.coil.compose)
+
+    // Hilt for ViewModel in Compose
+    implementation(libs.androidx.hilt.navigation.compose)
+
 }
