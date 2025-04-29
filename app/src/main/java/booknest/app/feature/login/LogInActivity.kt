@@ -10,7 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
-import booknest.app.MainActivity
+import booknest.app.feature.home.MainActivity
 import booknest.app.R
 import booknest.app.feature.login.presentation.LogInViewModel
 import booknest.app.feature.register.RegisterActivity

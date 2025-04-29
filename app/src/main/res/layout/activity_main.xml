@@ -5,15 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <TextView
-        android:id="@+id/uidTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="UID will appear here"
-        android:textSize="18sp"
-        android:layout_centerInParent="true" />
-
+    tools:context=".feature.home.MainActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
