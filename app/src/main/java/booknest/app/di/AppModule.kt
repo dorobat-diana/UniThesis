@@ -1,5 +1,7 @@
 package booknest.app.di
 
+import booknest.app.feature.profil.data.ProfileRepository
+import booknest.app.feature.profil.data.ProfileRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -22,4 +24,14 @@ object AppModule {
 
     @Provides
     fun provideFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideProfileRepository(
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        storage: FirebaseStorage
+    ): ProfileRepository {
+        return ProfileRepositoryImpl(auth, firestore, storage)
+    }
 }
