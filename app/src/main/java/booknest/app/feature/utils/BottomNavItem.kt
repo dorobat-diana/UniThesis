@@ -12,6 +12,6 @@ sealed class BottomNavItem(val route: String, val label: String, val icon: Image
     object Home : BottomNavItem("home", "Home", Icons.Default.Home)
     object Post : BottomNavItem("post", "Post", Icons.Default.AddCircle)
     object Map : BottomNavItem("map", "Map", Icons.Default.Place)
-    object Challenges : BottomNavItem("challenges", "Challenges", Icons.Default.Star)
+    object Challenges : BottomNavItem("challenges", "Challenge", Icons.Default.Star)
     object Profile : BottomNavItem("profile", "Profile", Icons.Default.Person)
 }

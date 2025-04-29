@@ -7,22 +7,22 @@
     <style name="Theme.BookNestApp" parent="Base.Theme.BookNestApp" >
 
         <!-- Background -->
-        <item name="android:windowBackground">@color/yellow</item>
+        <item name="android:windowBackground">@color/burn_red</item>
 
         <!-- App bar color -->
-        <item name="colorSurface">@color/cinammon</item>
+        <item name="colorSurface">@color/sand_storm</item>
 
         <!-- Button color -->
-        <item name="colorAccent">@color/caramel</item>
+        <item name="colorAccent">@color/citric</item>
 
         <!-- Text appearance -->
         <item name="android:textColorPrimary">@color/sand_storm</item>
 
         <!-- Default font -->
         <!-- Fix focus color for TextInputLayout -->
-        <item name="colorControlActivated">@color/cinammon</item>
-        <item name="colorControlNormal">@color/cinammon</item>
-        <item name="colorControlHighlight">@color/cinammon</item>
+        <item name="colorControlActivated">@color/sand_storm</item>
+        <item name="colorControlNormal">@color/sand_storm</item>
+        <item name="colorControlHighlight">@color/sand_storm</item>
 
     </style>
 </resources>

@@ -2,9 +2,13 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="yellow">#DC943C2A</color>
-    <color name="caramel">#C85030</color>
-    <color name="espresso">#C85030</color>
+
+    <!--basic pallet-->
+    <color name="burn_red">#DC943C2A</color>
+    <color name="citric">#C85030</color>
     <color name="sand_storm">#FBE8DA</color>
-    <color name="cinammon">#FBE8DA</color>
+
+    <!--navbar items-->
+    <color name="selected">#C5AA99</color>
+    <color name="unselected">#FBE8DA</color>
 </resources>
