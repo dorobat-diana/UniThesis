@@ -43,10 +43,10 @@ fun BottomNavigationBar(navController: NavHostController) {
                     }
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = colorResource(id = R.color.selected),       // your selected color
-                    unselectedIconColor = colorResource(id = R.color.unselected)   // your unselected color
+                    selectedIconColor = colorResource(id = R.color.selected),
+                    unselectedIconColor = colorResource(id = R.color.unselected)
                 ),
-                alwaysShowLabel = false // hide label if you don't want text
+                alwaysShowLabel = false
             )
         }
     }
