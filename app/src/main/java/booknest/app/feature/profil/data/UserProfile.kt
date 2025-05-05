@@ -7,7 +7,8 @@ data class UserProfile(
     val profilePictureUrl: String? = null,
     val caption: String = "",
     val friendsCount: Int = 0,
-    val postsCount: Int = 0
+    val postsCount: Int = 0,
+    val friends: List<String> = emptyList()
 ) {
     // No-argument constructor
     constructor() : this(null, null, null, null, "", 0, 0)

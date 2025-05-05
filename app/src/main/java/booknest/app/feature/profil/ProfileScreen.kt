@@ -1,7 +1,7 @@
 package booknest.app.feature.profil
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -34,13 +34,18 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
     val user by viewModel.profile.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val isFriend by viewModel.isFriend.collectAsState()
 
     var isEditing by remember { mutableStateOf(false) }
     var editedUsername by remember { mutableStateOf("") }
     var editedCaption by remember { mutableStateOf("") }
 
     LaunchedEffect(uid) {
-        uid?.let { viewModel.loadUser(it) }
+        uid?.let { viewModel.loadUser(it)
+            currentUserUid?.let { currentUid ->
+                viewModel.checkIfFriend(currentUid, it)
+            }
+        }
     }
 
         if (user != null) {
@@ -130,7 +135,10 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
                     Text(
                         text = "Friends: ${profile.friendsCount}",
                         style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
-                        color = colorResource(id = R.color.sand_storm)
+                        color = colorResource(id = R.color.sand_storm),
+                        modifier = Modifier.clickable {
+                            navController.navigate("friends_screen/${profile.uid}")
+                        }
                     )
                     Text(
                         text = "Posts: ${profile.postsCount}",
@@ -156,6 +164,38 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
                         Text(if (isEditing) "Save" else "Edit Profile")
+                    }
+                }
+
+                if (!isOwnProfile && isFriend != null) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                currentUserUid?.let { currentUid ->
+                                    if (isFriend == true) {
+                                        viewModel.removeFriend(currentUid, uid!!)
+                                    } else {
+                                        viewModel.addFriend(currentUid, uid!!)
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(id = R.color.citric)
+                            )
+                        ) {
+                            Text(
+                                text = if (isFriend == true) "Unfriend" else "Add Friend",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = Color.White,
+                                    fontStyle = FontStyle.Italic
+                                )
+                            )
+                        }
                     }
                 }
 

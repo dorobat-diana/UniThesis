@@ -1,6 +1,8 @@
 package booknest.app.feature.profil.presentation
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import booknest.app.feature.profil.data.UserProfile
@@ -24,6 +26,16 @@ class ProfileViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
+
+    private val _isFriend = MutableStateFlow<Boolean?>(null)
+    val isFriend: StateFlow<Boolean?> = _isFriend
+
+    fun checkIfFriend(currentUserUid: String, targetUserUid: String) {
+        viewModelScope.launch {
+            val result = repository.isFriend(currentUserUid, targetUserUid)
+            _isFriend.value = result
+        }
+    }
 
     fun loadUser(uid: String) {
         viewModelScope.launch {
@@ -71,4 +83,29 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun addFriend(currentUserUid: String, targetUserUid: String) {
+        viewModelScope.launch {
+            try {
+                repository.addFriend(currentUserUid, targetUserUid)
+                _isFriend.value = true
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Failed to add friend", e)
+                _error.value = "Failed to add friend"
+            }
+        }
+    }
+
+    fun removeFriend(currentUserUid: String, targetUserUid: String) {
+        viewModelScope.launch {
+            try {
+                repository.removeFriend(currentUserUid, targetUserUid)
+                _isFriend.value = false
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Failed to remove friend", e)
+                _error.value = "Failed to remove friend"
+            }
+        }
+    }
+
 }
