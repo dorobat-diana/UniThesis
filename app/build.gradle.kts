@@ -89,4 +89,5 @@ dependencies {
     // Hilt for ViewModel in Compose
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation(libs.play.services.location)
 }

@@ -2,6 +2,8 @@ package booknest.app.di
 
 import booknest.app.feature.home.data.HomeRepository
 import booknest.app.feature.home.data.HomeRepositoryImpl
+import booknest.app.feature.post.data.AttractionRepository
+import booknest.app.feature.post.data.AttractionRepositoryImpl
 import booknest.app.feature.profil.data.ProfileRepository
 import booknest.app.feature.profil.data.ProfileRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
@@ -43,5 +45,15 @@ object AppModule {
         firestore: FirebaseFirestore
     ): HomeRepository {
         return HomeRepositoryImpl(firestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAttractionRepository(
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        storage: FirebaseStorage
+    ): AttractionRepository {
+        return AttractionRepositoryImpl(auth, firestore, storage)
     }
 }
