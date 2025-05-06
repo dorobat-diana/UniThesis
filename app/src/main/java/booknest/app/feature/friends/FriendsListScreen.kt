@@ -1,6 +1,5 @@
 package booknest.app.feature.friends
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,14 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import booknest.app.R
-import coil.compose.rememberAsyncImagePainter
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import booknest.app.feature.friends.presentation.FriendsViewModel
-import booknest.app.feature.profil.data.UserProfile
 import android.util.Log
+import booknest.app.feature.home.presentation.UserItem
 
 @Composable
 fun FriendsListScreen(
@@ -73,53 +67,14 @@ fun FriendsListScreen(
             else -> {
                 Log.d("FriendsListScreen", "Friends loaded: ${friends.size}")
                 LazyColumn {
-                    items(friends) { friend ->
-                        FriendListItem(friend = friend)
+                    items(friends) { user ->
+                        UserItem(user = user) {
+                            navController.navigate("other_users/${user.uid}")
+                        }
                     }
                 }
+
             }
         }
     }
 }
-
-
-@Composable
-fun FriendListItem(friend: UserProfile) {
-    Log.d("FriendListItem", "Displaying friend: ${friend.username ?: "Unknown"}")
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                Log.d("FriendListItem", "Friend clicked: ${friend.username ?: "Unknown"}")
-            }
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Log.d("FriendListItem", "Loading profile picture for: ${friend.profilePictureUrl}")
-        Image(
-            painter = rememberAsyncImagePainter(friend.profilePictureUrl),
-            contentDescription = "Friend profile picture",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-        )
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column {
-            Text(
-                text = friend.username ?: "Unknown",
-                style = MaterialTheme.typography.bodyLarge,
-                color = colorResource(id = R.color.sand_storm)
-            )
-            Text(
-                text = friend.caption,
-                style = MaterialTheme.typography.bodySmall,
-                color = colorResource(id = R.color.sand_storm)
-            )
-        }
-    }
-}
-
