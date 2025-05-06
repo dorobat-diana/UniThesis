@@ -108,7 +108,8 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun updateProfilePictureFromBitmap(bitmap: Bitmap) {
-        repository.uploadImageToStorage(bitmap) { imageUrl ->
+        viewModelScope.launch {
+            val imageUrl = repository.uploadImageToStorage(bitmap)
             if (imageUrl != null) {
                 updateProfilePicture(imageUrl)
             } else {

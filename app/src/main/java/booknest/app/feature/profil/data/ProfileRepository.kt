@@ -10,5 +10,5 @@ interface ProfileRepository {
     suspend fun addFriend(currentUserUid: String, targetUserUid: String)
     suspend fun removeFriend(currentUserUid: String, targetUserUid: String)
     suspend fun getFriends(uid: String): List<UserProfile>
-    fun uploadImageToStorage(bitmap: Bitmap, onResult: (String?) -> Unit)
+    suspend fun uploadImageToStorage(bitmap: Bitmap): String?
 }

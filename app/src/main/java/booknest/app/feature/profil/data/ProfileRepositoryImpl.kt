@@ -116,25 +116,48 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun uploadImageToStorage(bitmap: Bitmap, onComplete: (String?) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().reference
-        val imageRef = storageRef.child("profile_pictures/${UUID.randomUUID()}.jpg")
+    private suspend fun getDefaultProfilePictureUrl(): String {
+        val storageRef = storage.reference.child("default.jpg")
+        Log.d("RegisterRepository", "Fetched default profile picture URL: $storageRef")
+        return storageRef.downloadUrl.await().toString()
+    }
 
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val data = baos.toByteArray()
+    override suspend fun uploadImageToStorage(bitmap: Bitmap): String? {
+        val currentUser = auth.currentUser ?: return null
+        val uid = currentUser.uid
+        val userDocRef = firestore.collection("users").document(uid)
 
-        imageRef.putBytes(data)
-            .addOnSuccessListener {
-                imageRef.downloadUrl.addOnSuccessListener { uri ->
-                    onComplete(uri.toString())
-                }.addOnFailureListener {
-                    onComplete(null)
+        return try {
+            val docSnapshot = userDocRef.get().await()
+            val userProfile = docSnapshot.toObject(UserProfile::class.java)
+            val oldImageUrl = userProfile?.profilePictureUrl
+            val defaultImageUrl = getDefaultProfilePictureUrl()
+
+            if (!oldImageUrl.isNullOrEmpty() && oldImageUrl != defaultImageUrl) {
+                try {
+                    storage.getReferenceFromUrl(oldImageUrl).delete().await()
+                    Log.d("ProfileRepository", "Old profile image deleted.")
+                } catch (e: Exception) {
+                    Log.w("ProfileRepository", "Failed to delete old image: ${e.message}")
                 }
             }
-            .addOnFailureListener {
-                onComplete(null)
-            }
+
+            val imageRef = storage.reference.child("profile_pictures/${UUID.randomUUID()}.jpg")
+
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data = baos.toByteArray()
+
+            imageRef.putBytes(data).await()
+            val downloadUrl = imageRef.downloadUrl.await().toString()
+
+            userDocRef.update("profilePictureUrl", downloadUrl).await()
+            Log.d("ProfileRepository", "Profile picture updated.")
+            downloadUrl
+        } catch (e: Exception) {
+            Log.e("ProfileRepository", "Error uploading image: ${e.message}", e)
+            null
+        }
     }
 
 }
