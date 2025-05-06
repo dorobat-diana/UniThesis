@@ -1,5 +1,6 @@
 package booknest.app.feature.profil.data
 
+import android.graphics.Bitmap
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -8,6 +9,8 @@ import com.google.firebase.storage.FirebaseStorage
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
+import java.util.UUID
 
 @Singleton
 class ProfileRepositoryImpl @Inject constructor(
@@ -113,5 +116,25 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun uploadImageToStorage(bitmap: Bitmap, onComplete: (String?) -> Unit) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imageRef = storageRef.child("profile_pictures/${UUID.randomUUID()}.jpg")
+
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        imageRef.putBytes(data)
+            .addOnSuccessListener {
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    onComplete(uri.toString())
+                }.addOnFailureListener {
+                    onComplete(null)
+                }
+            }
+            .addOnFailureListener {
+                onComplete(null)
+            }
+    }
 
 }

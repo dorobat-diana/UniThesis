@@ -1,6 +1,9 @@
 package booknest.app.feature.profil
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +43,13 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
     var editedUsername by remember { mutableStateOf("") }
     var editedCaption by remember { mutableStateOf("") }
 
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        bitmap?.let {
+            viewModel.updateProfilePictureFromBitmap(it)
+        }
+    }
+
+
     LaunchedEffect(uid) {
         uid?.let { viewModel.loadUser(it)
             currentUserUid?.let { currentUid ->
@@ -69,15 +79,41 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = colorResource(id = R.color.sand_storm))
                     }
                 }
-                Image(
-                    painter = rememberAsyncImagePainter(profile.profilePictureUrl),
-                    contentDescription = "Profile picture",
-                    contentScale = ContentScale.Crop,
+                Box(
                     modifier = Modifier
                         .size(120.dp)
-                        .clip(CircleShape)
                         .align(Alignment.CenterHorizontally)
-                )
+                        .clip(CircleShape)
+                        .clickable(enabled = isOwnProfile) {
+                            if (isOwnProfile) {
+                                launcher.launch(null)
+                            }
+                        }
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(profile.profilePictureUrl),
+                        contentDescription = "Profile picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                    )
+                    if (isOwnProfile) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color(0x55000000), shape = CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Edit",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+
 
                 Spacer(modifier = Modifier.height(8.dp))
 

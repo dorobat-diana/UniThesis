@@ -1,8 +1,7 @@
 package booknest.app.feature.profil.presentation
 
+import android.graphics.Bitmap
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import booknest.app.feature.profil.data.UserProfile
@@ -104,6 +103,16 @@ class ProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("ProfileViewModel", "Failed to remove friend", e)
                 _error.value = "Failed to remove friend"
+            }
+        }
+    }
+
+    fun updateProfilePictureFromBitmap(bitmap: Bitmap) {
+        repository.uploadImageToStorage(bitmap) { imageUrl ->
+            if (imageUrl != null) {
+                updateProfilePicture(imageUrl)
+            } else {
+                _error.value = "Failed to upload image"
             }
         }
     }
