@@ -58,6 +58,8 @@ class ProfileRepositoryImpl @Inject constructor(
             firestore.runBatch { batch ->
                 batch.update(userRef, "friends", FieldValue.arrayUnion(targetUserUid))
                 batch.update(targetRef, "friends", FieldValue.arrayUnion(currentUserUid))
+                batch.update(userRef, "friendsCount", FieldValue.increment(1))
+                batch.update(targetRef, "friendsCount", FieldValue.increment(1))
             }.await()
         } catch (e: Exception) {
             Log.e("ProfileRepository", "Error adding friend", e)
@@ -73,10 +75,41 @@ class ProfileRepositoryImpl @Inject constructor(
             firestore.runBatch { batch ->
                 batch.update(userRef, "friends", FieldValue.arrayRemove(targetUserUid))
                 batch.update(targetRef, "friends", FieldValue.arrayRemove(currentUserUid))
+                batch.update(userRef, "friendsCount", FieldValue.increment(-1))
+                batch.update(targetRef, "friendsCount", FieldValue.increment(-1))
             }.await()
         } catch (e: Exception) {
             Log.e("ProfileRepository", "Error removing friend", e)
             throw e
+        }
+    }
+
+    override suspend fun getFriends(uid: String): List<UserProfile> {
+        return try {
+            val userDoc = firestore.collection("users").document(uid).get().await()
+            val userProfile = userDoc.toObject(UserProfile::class.java)
+
+            val friendUids = userProfile?.friends ?: emptyList()
+
+            if (friendUids.isEmpty()) return emptyList()
+
+            val friendProfiles = mutableListOf<UserProfile>()
+
+            friendUids.forEach { friendUid ->
+                try {
+                    val friendDoc = firestore.collection("users").document(friendUid).get().await()
+                    friendDoc.toObject(UserProfile::class.java)?.let {
+                        friendProfiles.add(it)
+                    }
+                } catch (e: Exception) {
+                    Log.w("ProfileRepository", "Error fetching friend $friendUid: ${e.message}")
+                }
+            }
+
+            friendProfiles
+        } catch (e: Exception) {
+            Log.e("ProfileRepository", "Error fetching friends list: ${e.message}", e)
+            emptyList()
         }
     }
 

@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import booknest.app.feature.challanges.ChallengesScreen
+import booknest.app.feature.friends.FriendsListScreen
 import booknest.app.feature.map.MapScreen
 import booknest.app.feature.post.PostScreen
 import booknest.app.feature.profil.ProfileScreen
@@ -45,6 +46,13 @@ fun MainScreen(uid: String?) {
                     ProfileScreen(navController = navController, uid = uid)
                 }
             }
+            composable("friends_screen/{uid}") { backStackEntry ->
+                val uid = backStackEntry.arguments?.getString("uid")
+                if (uid != null) {
+                    FriendsListScreen(navController = navController, uid = uid)
+                }
+            }
+
         }
     }
 }

@@ -7,5 +7,5 @@ interface ProfileRepository {
     suspend fun isFriend(currentUserUid: String, targetUserUid: String): Boolean
     suspend fun addFriend(currentUserUid: String, targetUserUid: String)
     suspend fun removeFriend(currentUserUid: String, targetUserUid: String)
-
+    suspend fun getFriends(uid: String): List<UserProfile>
 }
