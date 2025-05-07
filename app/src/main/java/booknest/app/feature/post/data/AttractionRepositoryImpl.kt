@@ -65,11 +65,14 @@ class AttractionRepositoryImpl @Inject constructor(
         return storageRef.downloadUrl.await().toString()
     }
 
-    override suspend fun createPost(attractionId: String, bitmap: Bitmap): Result<Unit> {
+    override suspend fun createPost(attractionId: String, photoUri: Uri): Result<Unit> {
         return try {
             val userId = auth.currentUser?.uid ?: return Result.failure(Exception("User not logged in"))
             val postId = UUID.randomUUID().toString()
-            val photoUrl = uploadPostImage(bitmap, postId)
+
+            val storageRef = storage.reference.child("posts/$postId.jpg")
+            storageRef.putFile(photoUri).await()
+            val photoUrl = storageRef.downloadUrl.await().toString()
 
             val post = Post(
                 uid = postId,
@@ -84,4 +87,5 @@ class AttractionRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
 }

@@ -3,6 +3,7 @@ package booknest.app.feature.post
 import android.Manifest
 import android.content.Context
 import android.location.Location
+import android.net.Uri
 import android.os.Looper
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -25,10 +26,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import booknest.app.feature.post.presentation.PostViewModel
 import com.google.android.gms.location.*
 import booknest.app.R
+import java.io.File
 
 @Composable
 fun PostScreen(
@@ -58,11 +61,14 @@ fun PostScreen(
         }
     }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
-        bitmap?.let {
-            viewModel.createPost(it)
+    var photoUri by remember { mutableStateOf<Uri?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success && photoUri != null) {
+            viewModel.createPost(photoUri!!)
         }
     }
+
 
     // Check if permission is already granted before requesting it
     LaunchedEffect(Unit) {
@@ -145,7 +151,15 @@ fun PostScreen(
                             modifier = Modifier
                                 .clickable {
                                     viewModel.onAttractionSelected(it.name)
-                                    launcher.launch(null)
+
+                                    val photoFile = File.createTempFile("photo_", ".jpg", context.cacheDir).apply {
+                                        createNewFile()
+                                        deleteOnExit()
+                                    }
+                                    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photoFile)
+                                    photoUri = uri
+                                    launcher.launch(uri)
+
                                 }
                         )
                     }

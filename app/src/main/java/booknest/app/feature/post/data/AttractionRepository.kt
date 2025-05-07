@@ -11,5 +11,5 @@ interface AttractionRepository {
         onResult: (List<Attraction>) -> Unit
     )
 
-    suspend fun createPost(string: String, bitmap: Bitmap): Result<Unit>
+    suspend fun createPost(string: String, photoUri: Uri): Result<Unit>
 }

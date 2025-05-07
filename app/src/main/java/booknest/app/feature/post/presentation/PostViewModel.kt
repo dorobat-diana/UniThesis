@@ -1,6 +1,7 @@
 package booknest.app.feature.post.presentation
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -40,10 +41,10 @@ class PostViewModel @Inject constructor(
         }
     }
 
-    fun createPost(bitmap: Bitmap) {
-        val attraction = selectedAttraction.value
+    fun createPost(photoUri: Uri) {
+        val attractionId = _selectedAttraction.value ?: return
         viewModelScope.launch {
-            val result = repo.createPost(attraction.toString(), bitmap)
+            val result = repo.createPost(attractionId, photoUri)
             _postCreationStatus.value = result
         }
     }
