@@ -1,10 +1,14 @@
 package booknest.app.feature.post.data
 
+import android.graphics.Bitmap
 import android.location.Location
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -49,5 +53,35 @@ class AttractionRepositoryImpl @Inject constructor(
             .addOnFailureListener {
                 onResult(emptyList())
             }
+    }
+
+    suspend fun uploadPostImage(bitmap: Bitmap, postId: String): String {
+        val storageRef = storage.reference.child("posts/$postId.jpg")
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        storageRef.putBytes(data).await()
+        return storageRef.downloadUrl.await().toString()
+    }
+
+    override suspend fun createPost(attractionId: String, bitmap: Bitmap): Result<Unit> {
+        return try {
+            val userId = auth.currentUser?.uid ?: return Result.failure(Exception("User not logged in"))
+            val postId = UUID.randomUUID().toString()
+            val photoUrl = uploadPostImage(bitmap, postId)
+
+            val post = Post(
+                uid = postId,
+                userId = userId,
+                attraction = attractionId,
+                photoUrl = photoUrl
+            )
+
+            firestore.collection("posts").document(postId).set(post).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

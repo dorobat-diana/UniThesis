@@ -19,7 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +55,12 @@ fun PostScreen(
         permissionGranted = isGranted
         if (!isGranted) {
             Toast.makeText(context, "Location permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
+        bitmap?.let {
+            viewModel.createPost(it)
         }
     }
 
@@ -139,8 +144,8 @@ fun PostScreen(
                             fontFamily = FontFamily.SansSerif, // Apply calligraphic font
                             modifier = Modifier
                                 .clickable {
-                                    // You can add any functionality for individual attraction text being clicked here
-                                    Toast.makeText(context, "${it.name} clicked", Toast.LENGTH_SHORT).show()
+                                    viewModel.onAttractionSelected(it.name)
+                                    launcher.launch(null)
                                 }
                         )
                     }
