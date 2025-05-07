@@ -1,15 +1,19 @@
 package booknest.app.feature.home.data
 
 import android.util.Log
+import booknest.app.feature.post.data.Post
+import booknest.app.feature.profil.data.ProfileRepository
 import booknest.app.feature.profil.data.UserProfile
 import com.google.firebase.firestore.FirebaseFirestore
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.Timestamp
 
 @Singleton
 class HomeRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val profileRepository: ProfileRepository,
 ) : HomeRepository {
 
     override suspend fun searchUsers(query: String): List<UserProfile> {
@@ -32,4 +36,51 @@ class HomeRepositoryImpl @Inject constructor(
             emptyList()
         }
     }
+
+    override suspend fun getFriendsPosts(userId: String): List<Post> {
+        return try {
+            val timeLimit = System.currentTimeMillis() - 48 * 60 * 60 * 1000 // 48 hours in milliseconds
+            Log.d("HomeRepositoryImpl", "Time limit (ms): $timeLimit, Date: ${java.util.Date(timeLimit)}")
+
+            // Fetch friends' IDs
+            val friends = profileRepository.getFriends(userId)
+            val friendIds = friends.mapNotNull { it.uid }
+            Log.d("HomeRepositoryImpl", "Friend IDs: $friendIds")
+
+            if (friendIds.isEmpty()) {
+                Log.d("HomeRepositoryImpl", "No friends found for user with ID: $userId")
+                return emptyList()
+            }
+
+            // Query posts of friends within the time limit
+            val postsSnapshot = firestore.collection("posts")
+                .whereIn("userId", friendIds)
+                .whereGreaterThan("timestamp", Timestamp(timeLimit / 1000, 0)) // Use Firebase Timestamp here
+                .get()
+                .await()
+
+            // Convert documents to Post objects and filter by timestamp if needed
+            val posts = postsSnapshot.documents.mapNotNull { doc ->
+                val post = doc.toObject(Post::class.java)
+                val postTimestamp = post?.timestamp?.toDate()?.time  // Convert Firestore Timestamp to milliseconds
+
+                // Log the timestamp values for debugging
+                Log.d("HomeRepositoryImpl", "Post timestamp (ms): $postTimestamp, Time limit (ms): $timeLimit")
+
+                // Ensure post is within the time limit
+                if (postTimestamp != null && postTimestamp > timeLimit) {
+                    post
+                } else {
+                    null // Skip posts older than 48 hours
+                }
+            }
+
+            Log.d("HomeRepositoryImpl", "Fetched ${posts.size} posts for user with ID: $userId")
+            posts
+        } catch (e: Exception) {
+            Log.e("HomeRepositoryImpl", "Error fetching posts: ${e.message}", e)
+            emptyList()
+        }
+    }
+
 }

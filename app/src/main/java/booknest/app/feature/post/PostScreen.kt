@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import booknest.app.feature.post.presentation.PostViewModel
 import com.google.android.gms.location.*
 import booknest.app.R
+import kotlinx.coroutines.tasks.await
 import java.io.File
 
 @Composable
@@ -82,7 +83,6 @@ fun PostScreen(
         }
     }
 
-    // Request location updates only when permission is granted
     LaunchedEffect(permissionGranted) {
         if (permissionGranted) {
             try {

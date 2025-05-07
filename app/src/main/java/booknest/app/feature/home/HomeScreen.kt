@@ -15,16 +15,28 @@ import androidx.navigation.NavHostController
 import booknest.app.R
 import booknest.app.feature.home.presentation.HomeViewModel
 import booknest.app.feature.home.presentation.UserItem
+import booknest.app.feature.post.presentation.PostItem
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val viewModel: HomeViewModel = hiltViewModel()
 
     val users by viewModel.users.collectAsState()
+    val posts by viewModel.posts.collectAsState()
+    val userMap by viewModel.userMap.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
 
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+
+    val userId = FirebaseAuth.getInstance().currentUser?.uid
+    LaunchedEffect(userId) {
+        userId?.let {
+            viewModel.loadFriendMap(it)
+            viewModel.fetchFriendsPosts(it)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -36,7 +48,7 @@ fun HomeScreen(navController: NavHostController) {
             value = searchQuery,
             onValueChange = {
                 searchQuery = it
-                viewModel.searchUsers(it.text)  // Trigger search on change
+                viewModel.searchUsers(it.text)
             },
             label = { Text("Search Users", color = colorResource(id = R.color.sand_storm)) },
             modifier = Modifier.fillMaxWidth(),
@@ -51,7 +63,6 @@ fun HomeScreen(navController: NavHostController) {
             )
         )
 
-
         if (users.isNotEmpty()) {
             Spacer(modifier = Modifier.width(8.dp))
             TextButton(onClick = {
@@ -64,7 +75,6 @@ fun HomeScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Loading state
         if (loading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -72,18 +82,21 @@ fun HomeScreen(navController: NavHostController) {
             )
         }
 
-        // Error state
         error?.let {
             Text(text = it, color = MaterialTheme.colorScheme.error)
         }
 
-        // Users list
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(users) { user ->
-                UserItem(user = user) {
-                    navController.navigate("other_users/${user.uid}")
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            if (searchQuery.text.isNotBlank() && users.isNotEmpty()) {
+                items(users) { user ->
+                    UserItem(user = user) {
+                        navController.navigate("other_users/${user.uid}")
+                    }
+                }
+            } else {
+                items(posts) { post ->
+                    val friendName = userMap[post.userId]?.username ?: "Unknown"
+                    PostItem(post = post, userName = friendName)
                 }
             }
         }

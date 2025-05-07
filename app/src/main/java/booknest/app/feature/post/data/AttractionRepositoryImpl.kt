@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.google.firebase.Timestamp
 
 @Singleton
 class AttractionRepositoryImpl @Inject constructor(
@@ -78,7 +79,8 @@ class AttractionRepositoryImpl @Inject constructor(
                 uid = postId,
                 userId = userId,
                 attraction = attractionId,
-                photoUrl = photoUrl
+                photoUrl = photoUrl,
+                timestamp = Timestamp(System.currentTimeMillis() / 1000, 0)
             )
 
             firestore.collection("posts").document(postId).set(post).await()

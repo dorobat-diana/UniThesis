@@ -42,9 +42,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideHomeRepository(
-        firestore: FirebaseFirestore
+        firestore: FirebaseFirestore,
+        profileRepository: ProfileRepository
     ): HomeRepository {
-        return HomeRepositoryImpl(firestore)
+        return HomeRepositoryImpl(firestore, profileRepository)
     }
 
     @Provides
