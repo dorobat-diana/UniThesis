@@ -1,44 +1,56 @@
 package booknest.app.feature.post.presentation
 
+import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.core.content.ContextCompat
+import booknest.app.R
 import booknest.app.feature.post.data.Post
 
 @Composable
 fun PostItem(
     post: Post,
     userName: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current
 ) {
     Column(
         modifier = modifier
-            .padding(12.dp)
             .fillMaxWidth()
+            .padding(vertical = 8.dp)
     ) {
-        Text(
-            text = userName,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        post.attraction?.let {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
-                text = "📍 $it",
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.primary
+                text = userName,
+                color = Color(ContextCompat.getColor(context, R.color.sand_storm)),
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                fontFamily = FontFamily.SansSerif,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color.White,
+                    fontStyle = FontStyle.Italic
+                )
             )
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         post.photoUrl?.let { url ->
             AsyncImage(
@@ -46,20 +58,54 @@ fun PostItem(
                     .data(url)
                     .crossfade(true)
                     .build(),
-                contentDescription = "Post photo",
+                contentDescription = "Post image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(300.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            IconButton(onClick = { /* Handle like click here */ }) {
+                Icon(
+                    imageVector = Icons.Default.ThumbUp,
+                    contentDescription = "Like"
+                )
+            }
+        }
 
         Text(
             text = "${post.likes.size} ${if (post.likes.size == 1) "like" else "likes"}",
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
+            color = Color(ContextCompat.getColor(context, R.color.sand_storm)),
+            fontSize = 16.sp,
+            fontFamily = FontFamily.SansSerif,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                color = Color.White,
+                fontStyle = FontStyle.Italic
+            ),
+            modifier = Modifier.padding(horizontal = 12.dp)
         )
+
+        post.attraction?.let {
+            Text(
+                text = "$userName 📍 $it",
+                color = Color(ContextCompat.getColor(context, R.color.sand_storm)),
+                fontSize = 16.sp,
+                fontFamily = FontFamily.SansSerif,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color.White,
+                    fontStyle = FontStyle.Italic
+                ),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+            )
+        }
     }
 }

@@ -17,6 +17,7 @@ import booknest.app.feature.home.presentation.HomeViewModel
 import booknest.app.feature.home.presentation.UserItem
 import booknest.app.feature.post.presentation.PostItem
 import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -43,7 +44,6 @@ fun HomeScreen(navController: NavHostController) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Search Bar
         OutlinedTextField(
             value = searchQuery,
             onValueChange = {
@@ -86,7 +86,11 @@ fun HomeScreen(navController: NavHostController) {
             Text(text = it, color = MaterialTheme.colorScheme.error)
         }
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(bottom = 80.dp)
+
+        ) {
             if (searchQuery.text.isNotBlank() && users.isNotEmpty()) {
                 items(users) { user ->
                     UserItem(user = user) {
@@ -96,7 +100,31 @@ fun HomeScreen(navController: NavHostController) {
             } else {
                 items(posts) { post ->
                     val friendName = userMap[post.userId]?.username ?: "Unknown"
-                    PostItem(post = post, userName = friendName)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = colorResource(id = R.color.citric)
+                        ),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Box(modifier = Modifier.padding(12.dp)) {
+                            PostItem(post = post, userName = friendName)
+                        }
+                    }
+                }
+
+                item {
+                    Text(
+                        text = "No more posts",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        color = colorResource(id = R.color.sand_storm),
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }

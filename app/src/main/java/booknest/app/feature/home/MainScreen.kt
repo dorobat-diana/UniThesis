@@ -36,7 +36,6 @@ fun MainScreen(uid: String?) {
             composable(BottomNavItem.Post.route) { PostScreen() }
             composable(BottomNavItem.Challenges.route) { ChallengesScreen() }
             composable(BottomNavItem.Profile.route) { ProfileScreen(navController = navController, uid) }
-            // Pass the uid dynamically to the ProfileScreen for another user
             composable(
                 route = "other_users/{uid}",
                 arguments = listOf(navArgument("uid") { type = NavType.StringType })
