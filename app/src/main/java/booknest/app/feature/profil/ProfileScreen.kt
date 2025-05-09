@@ -127,6 +127,15 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
                                 id = R.color.sand_storm
                             )
                         ),
+                        colors =  OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = colorResource(id = R.color.sand_storm),
+                            unfocusedTextColor = colorResource(id = R.color.sand_storm),
+                            cursorColor = colorResource(id = R.color.sand_storm),
+                            focusedLabelColor = colorResource(id = R.color.sand_storm),
+                            unfocusedLabelColor = colorResource(id = R.color.sand_storm),
+                            focusedBorderColor = colorResource(id = R.color.sand_storm),
+                            unfocusedBorderColor = colorResource(id = R.color.sand_storm)
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
@@ -147,6 +156,15 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
                             color = colorResource(
                                 id = R.color.sand_storm
                             )
+                        ),
+                        colors =  OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = colorResource(id = R.color.sand_storm),
+                            unfocusedTextColor = colorResource(id = R.color.sand_storm),
+                            cursorColor = colorResource(id = R.color.sand_storm),
+                            focusedLabelColor = colorResource(id = R.color.sand_storm),
+                            unfocusedLabelColor = colorResource(id = R.color.sand_storm),
+                            focusedBorderColor = colorResource(id = R.color.sand_storm),
+                            unfocusedBorderColor = colorResource(id = R.color.sand_storm)
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
