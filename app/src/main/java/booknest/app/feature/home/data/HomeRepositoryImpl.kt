@@ -22,7 +22,7 @@ class HomeRepositoryImpl @Inject constructor(
             val usersSnapshot = firestore.collection("users")
                 .orderBy("username")
                 .startAt(query)
-                .endAt(query + "\uf8ff") // This ensures partial matches
+                .endAt(query + "\uf8ff")
                 .get()
                 .await()
 
@@ -39,10 +39,9 @@ class HomeRepositoryImpl @Inject constructor(
 
     override suspend fun getFriendsPosts(userId: String): List<Post> {
         return try {
-            val timeLimit = System.currentTimeMillis() - 48 * 60 * 60 * 1000 // 48 hours in milliseconds
+            val timeLimit = System.currentTimeMillis() - 48 * 60 * 60 * 1000
             Log.d("HomeRepositoryImpl", "Time limit (ms): $timeLimit, Date: ${java.util.Date(timeLimit)}")
 
-            // Fetch friends' IDs
             val friends = profileRepository.getFriends(userId)
             val friendIds = friends.mapNotNull { it.uid }
             Log.d("HomeRepositoryImpl", "Friend IDs: $friendIds")
@@ -52,26 +51,22 @@ class HomeRepositoryImpl @Inject constructor(
                 return emptyList()
             }
 
-            // Query posts of friends within the time limit
             val postsSnapshot = firestore.collection("posts")
                 .whereIn("userId", friendIds)
-                .whereGreaterThan("timestamp", Timestamp(timeLimit / 1000, 0)) // Use Firebase Timestamp here
+                .whereGreaterThan("timestamp", Timestamp(timeLimit / 1000, 0))
                 .get()
                 .await()
 
-            // Convert documents to Post objects and filter by timestamp if needed
             val posts = postsSnapshot.documents.mapNotNull { doc ->
                 val post = doc.toObject(Post::class.java)
-                val postTimestamp = post?.timestamp?.toDate()?.time  // Convert Firestore Timestamp to milliseconds
+                val postTimestamp = post?.timestamp?.toDate()?.time
 
-                // Log the timestamp values for debugging
                 Log.d("HomeRepositoryImpl", "Post timestamp (ms): $postTimestamp, Time limit (ms): $timeLimit")
 
-                // Ensure post is within the time limit
                 if (postTimestamp != null && postTimestamp > timeLimit) {
                     post
                 } else {
-                    null // Skip posts older than 48 hours
+                    null
                 }
             }
 

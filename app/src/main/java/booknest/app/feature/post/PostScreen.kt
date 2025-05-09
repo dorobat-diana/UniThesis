@@ -2,6 +2,7 @@ package booknest.app.feature.post
 
 import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
 import android.os.Looper
@@ -10,18 +11,17 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,7 +31,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import booknest.app.feature.post.presentation.PostViewModel
 import com.google.android.gms.location.*
 import booknest.app.R
-import kotlinx.coroutines.tasks.await
 import java.io.File
 
 @Composable
@@ -39,19 +38,19 @@ fun PostScreen(
     viewModel: PostViewModel = hiltViewModel(),
     context: Context = LocalContext.current
 ) {
-
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
-    val locationRequest = remember {
-        LocationRequest.create().apply {
-            interval = 5000
-            fastestInterval = 2000
-            priority = Priority.PRIORITY_HIGH_ACCURACY
-        }
-    }
+    val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0L)
+        .setMinUpdateDistanceMeters(10f)
+        .setWaitForAccurateLocation(true)
+        .build()
+
 
     var permissionGranted by remember { mutableStateOf(false) }
 
     val attractions = viewModel.nearbyAttractions
+
+    val isLoading by viewModel.isLoading.collectAsState()
+
 
     val locationPermissionRequest = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -70,13 +69,11 @@ fun PostScreen(
         }
     }
 
-
-    // Check if permission is already granted before requesting it
     LaunchedEffect(Unit) {
         val permissionStatus = ContextCompat.checkSelfPermission(
             context, Manifest.permission.ACCESS_FINE_LOCATION
         )
-        if (permissionStatus == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+        if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
             permissionGranted = true
         } else {
             locationPermissionRequest.launch(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -108,70 +105,106 @@ fun PostScreen(
 
     Column(modifier = Modifier.padding(16.dp)) {
         if (permissionGranted) {
-            // "Nearby Attractions" Text centered and calligraphic
             Text(
                 text = "Nearby Attractions:",
                 color = Color(ContextCompat.getColor(context, R.color.sand_storm)),
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                fontFamily = FontFamily.SansSerif, // Apply calligraphic font
-                modifier = Modifier
-                    .fillMaxWidth()
-
+                fontFamily = FontFamily.SansSerif,
+                modifier = Modifier.fillMaxWidth(),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color.White,
+                    fontStyle = FontStyle.Italic
+                )
             )
 
             Spacer(modifier = Modifier.padding(top = 16.dp))
 
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = Color(ContextCompat.getColor(context, R.color.sand_storm))
+                    )
+                }
+            } else {
             if (attractions.isEmpty()) {
                 Text(
                     text = "No attractions found within 500 meters.",
                     color = Color(ContextCompat.getColor(context, R.color.sand_storm)),
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
-                    fontFamily = FontFamily.SansSerif
+                    fontFamily = FontFamily.SansSerif,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.White,
+                        fontStyle = FontStyle.Italic
+                    )
                 )
             } else {
-                attractions.forEach {
-                    // Transparent background box for each attraction
-                    Box(
-                        modifier = Modifier
-                            .background(Color(ContextCompat.getColor(context, R.color.selected))) // Transparent white background (adjust opacity)
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    attractions.forEach { attraction ->
                         Text(
-                            text = "${it.name}",
+                            text = attraction.name,
                             color = Color(ContextCompat.getColor(context, R.color.sand_storm)),
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = Color.White,
+                                fontStyle = FontStyle.Italic
+                            ),
                             textAlign = TextAlign.Center,
-                            fontFamily = FontFamily.SansSerif, // Apply calligraphic font
+                            fontFamily = FontFamily.SansSerif,
                             modifier = Modifier
                                 .clickable {
-                                    viewModel.onAttractionSelected(it.name)
+                                    viewModel.onAttractionSelected(attraction.name)
 
-                                    val photoFile = File.createTempFile("photo_", ".jpg", context.cacheDir).apply {
-                                        createNewFile()
-                                        deleteOnExit()
-                                    }
-                                    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", photoFile)
+                                    val photoFile =
+                                        File.createTempFile("photo_", ".jpg", context.cacheDir)
+                                            .apply {
+                                                createNewFile()
+                                                deleteOnExit()
+                                            }
+                                    val uri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.fileprovider",
+                                        photoFile
+                                    )
                                     photoUri = uri
                                     launcher.launch(uri)
-
                                 }
+                                .background(
+                                    Color(
+                                        ContextCompat.getColor(
+                                            context,
+                                            R.color.citric
+                                        )
+                                    )
+                                )
+                                .fillMaxWidth()
+                                .padding(8.dp)
                         )
                     }
                 }
             }
+        }
         } else {
             Text(
                 text = "Location permission is required to show nearby attractions.",
                 color = Color(ContextCompat.getColor(context, R.color.sand_storm)),
                 fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Cursive
+                fontFamily = FontFamily.SansSerif,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = Color.White,
+                    fontStyle = FontStyle.Italic
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }

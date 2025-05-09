@@ -64,7 +64,7 @@ class HomeViewModel @Inject constructor(
                 _posts.value = homeRepository.getFriendsPosts(userId)
             } catch (e: Exception) {
                 _error.value = "Failed to fetch posts: ${e.message}"
-                Log.e("HomeViewModel", "Error fetching posts: ${e.message}", e) // Add this log statement
+                Log.e("HomeViewModel", "Error fetching posts: ${e.message}", e)
             } finally {
                 _loading.value = false
             }
