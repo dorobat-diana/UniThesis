@@ -30,9 +30,6 @@ class ProfileViewModel @Inject constructor(
     private val _isFriend = MutableStateFlow<Boolean?>(null)
     val isFriend: StateFlow<Boolean?> = _isFriend
 
-    private val _posts = MutableStateFlow<List<Post>>(emptyList())
-    val posts: StateFlow<List<Post>> = _posts
-
     fun checkIfFriend(currentUserUid: String, targetUserUid: String) {
         viewModelScope.launch {
             val result = repository.isFriend(currentUserUid, targetUserUid)
@@ -122,17 +119,4 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun fetchUserPosts(userId: String) {
-        viewModelScope.launch {
-            _loading.value = true
-            try {
-                _posts.value = repository.loadUserPosts(userId)
-            } catch (e: Exception) {
-                _error.value = "Failed to fetch posts: ${e.message}"
-                Log.e("HomeViewModel", "Error fetching posts: ${e.message}", e)
-            } finally {
-                _loading.value = false
-            }
-        }
-    }
 }

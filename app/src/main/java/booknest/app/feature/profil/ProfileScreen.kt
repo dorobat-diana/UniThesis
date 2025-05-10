@@ -35,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth
 import booknest.app.R
 import booknest.app.feature.home.presentation.UserItem
 import booknest.app.feature.post.presentation.PostItem
+import booknest.app.feature.post.presentation.PostItemViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import kotlin.collections.get
@@ -42,15 +43,17 @@ import kotlin.collections.get
 @Composable
 fun ProfileScreen(navController: NavHostController, uid: String?, context: Context = LocalContext.current) {
     val viewModel: ProfileViewModel = hiltViewModel()
+    val postViewModel: PostItemViewModel = hiltViewModel()
 
     val currentUserUid = remember { FirebaseAuth.getInstance().currentUser?.uid }
     val isOwnProfile = currentUserUid == uid
 
     val user by viewModel.profile.collectAsState()
-    val loading by viewModel.loading.collectAsState()
+    val loading by postViewModel.loading.collectAsState()
+    val loadingProfile by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
     val isFriend by viewModel.isFriend.collectAsState()
-    val posts by viewModel.posts.collectAsState()
+    val posts by postViewModel.posts.collectAsState()
 
     var isEditing by remember { mutableStateOf(false) }
     var editedUsername by remember { mutableStateOf("") }
@@ -65,7 +68,7 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
 
     LaunchedEffect(uid) {
         uid?.let {
-            viewModel.fetchUserPosts(it)
+            postViewModel.fetchUserPosts(it)
             viewModel.loadUser(it)
             currentUserUid?.let { currentUid ->
                 viewModel.checkIfFriend(currentUid, it)
@@ -297,8 +300,8 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
                             }
                         }
                     } else {
-
-                        items(posts) { post ->
+                        items(posts) { postUiState ->
+                            val userName = user!!.username.toString()
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -309,7 +312,15 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
                                 elevation = CardDefaults.cardElevation(4.dp)
                             ) {
                                 Box(modifier = Modifier.padding(12.dp)) {
-//                                    PostItem(post = post, userName = user!!.username.toString())
+                                    PostItem(
+                                        post = postUiState.post,
+                                        userName = userName,
+                                        onLikeClick = {
+                                            postViewModel.toggleLike(user!!.uid.toString(), postUiState.post)
+                                        },
+                                        isLiked = postUiState.isLiked,
+                                        likeCount = postUiState.likeCount
+                                    )
                                 }
                             }
                         }
@@ -318,6 +329,13 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
 
 
                 if (loading) {
+                    CircularProgressIndicator(
+                        color = colorResource(id = R.color.sand_storm),
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp)
+                    )
+                }
+
+                if (loadingProfile) {
                     CircularProgressIndicator(
                         color = colorResource(id = R.color.sand_storm),
                         modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp)

@@ -1,5 +1,6 @@
 package booknest.app.feature.post.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import booknest.app.feature.post.data.Post
 import booknest.app.feature.post.data.PostRepository
@@ -18,6 +19,14 @@ class PostItemViewModel @Inject constructor(
     private val _posts = MutableStateFlow<List<PostUiState>>(emptyList())
     val posts: StateFlow<List<PostUiState>> = _posts
 
+    private val _postsUser = MutableStateFlow<List<PostUiState>>(emptyList())
+    val postsUser: StateFlow<List<PostUiState>> = _postsUser
+
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error
 
     fun toggleLike(userId: String, post: Post) {
         viewModelScope.launch {
@@ -44,6 +53,26 @@ class PostItemViewModel @Inject constructor(
     fun fetchFriendsPosts(userId: String) {
         viewModelScope.launch {
             val posts = postRepository.getFriendsPosts(userId)
+
+            val enrichedPosts = posts.map { post ->
+                // Refresh the like state for this post
+                val isLiked = postRepository.isPostLikedByUser(post.uid ?: "", userId)
+                val likeCount = postRepository.getLikesCount(post.uid ?: "")
+
+                PostUiState(
+                    post = post,
+                    isLiked = isLiked,
+                    likeCount = likeCount
+                )
+            }
+
+            _posts.value = enrichedPosts
+        }
+    }
+
+    fun fetchUserPosts(userId: String) {
+        viewModelScope.launch {
+            val posts = postRepository.loadUserPosts(userId)
 
             val enrichedPosts = posts.map { post ->
                 // Refresh the like state for this post

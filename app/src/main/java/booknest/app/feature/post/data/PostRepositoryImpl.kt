@@ -101,4 +101,20 @@ class PostRepositoryImpl(
         }
     }
 
+    override suspend fun loadUserPosts(userId: String): List<Post> {
+        return try {
+            val postsSnapshot = firestore.collection("posts")
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+            val posts = postsSnapshot.documents.mapNotNull { document ->
+                document.toObject(Post::class.java)
+            }
+            Log.d("PostRepositoryImpl", "Fetched ${posts.size} posts for user with ID: $userId")
+            return posts
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
 }
