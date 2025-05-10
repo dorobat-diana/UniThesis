@@ -84,6 +84,9 @@ class AttractionRepositoryImpl @Inject constructor(
             )
 
             firestore.collection("posts").document(postId).set(post).await()
+            val userRef = firestore.collection("users").document(userId)
+            userRef.update("postsCount", com.google.firebase.firestore.FieldValue.increment(1)).await()
+
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

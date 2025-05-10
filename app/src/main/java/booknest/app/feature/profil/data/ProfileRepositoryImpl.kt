@@ -2,6 +2,8 @@ package booknest.app.feature.profil.data
 
 import android.graphics.Bitmap
 import android.util.Log
+import booknest.app.feature.post.data.Post
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -160,4 +162,17 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun loadUserPosts(userId: String): List<Post> {
+        return try {
+            val postsSnapshot = firestore.collection("posts")
+                .whereEqualTo("userId", userId)
+                .get()
+                .await()
+            postsSnapshot.documents.mapNotNull { document ->
+                document.toObject(Post::class.java)
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 }

@@ -1,11 +1,14 @@
 package booknest.app.feature.profil
 
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -16,19 +19,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import booknest.app.feature.profil.presentation.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 import booknest.app.R
+import booknest.app.feature.home.presentation.UserItem
+import booknest.app.feature.post.presentation.PostItem
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import kotlin.collections.get
 
 @Composable
-fun ProfileScreen(navController: NavHostController, uid: String?) {
+fun ProfileScreen(navController: NavHostController, uid: String?, context: Context = LocalContext.current) {
     val viewModel: ProfileViewModel = hiltViewModel()
 
     val currentUserUid = remember { FirebaseAuth.getInstance().currentUser?.uid }
@@ -38,6 +50,7 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
     val isFriend by viewModel.isFriend.collectAsState()
+    val posts by viewModel.posts.collectAsState()
 
     var isEditing by remember { mutableStateOf(false) }
     var editedUsername by remember { mutableStateOf("") }
@@ -51,7 +64,9 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
 
 
     LaunchedEffect(uid) {
-        uid?.let { viewModel.loadUser(it)
+        uid?.let {
+            viewModel.fetchUserPosts(it)
+            viewModel.loadUser(it)
             currentUserUid?.let { currentUid ->
                 viewModel.checkIfFriend(currentUid, it)
             }
@@ -252,6 +267,54 @@ fun ProfileScreen(navController: NavHostController, uid: String?) {
                         }
                     }
                 }
+
+                Divider(
+                    color = colorResource(id = R.color.sand_storm),
+                    thickness = 2.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
+                )
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    contentPadding = PaddingValues(bottom = 80.dp)
+                ) {
+                    if (posts.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .wrapContentSize(Alignment.Center)
+                            ) {
+                                Text(
+                                    text = "No posts yet",
+                                    style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
+                                    color = colorResource(id = R.color.sand_storm)
+                                )
+                            }
+                        }
+                    } else {
+
+                        items(posts) { post ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = colorResource(id = R.color.citric)
+                                ),
+                                elevation = CardDefaults.cardElevation(4.dp)
+                            ) {
+                                Box(modifier = Modifier.padding(12.dp)) {
+                                    PostItem(post = post, userName = user!!.username.toString())
+                                }
+                            }
+                        }
+                    }
+                }
+
 
                 if (loading) {
                     CircularProgressIndicator(

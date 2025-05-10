@@ -1,6 +1,7 @@
 package booknest.app.feature.profil.data
 
 import android.graphics.Bitmap
+import booknest.app.feature.post.data.Post
 
 
 interface ProfileRepository {
@@ -11,4 +12,5 @@ interface ProfileRepository {
     suspend fun removeFriend(currentUserUid: String, targetUserUid: String)
     suspend fun getFriends(uid: String): List<UserProfile>
     suspend fun uploadImageToStorage(bitmap: Bitmap): String?
+    suspend fun loadUserPosts(userId: String): List<Post>
 }

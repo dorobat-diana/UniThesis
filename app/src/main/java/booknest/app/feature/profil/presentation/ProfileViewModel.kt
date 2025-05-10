@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import booknest.app.feature.post.data.Post
 import booknest.app.feature.profil.data.UserProfile
 import booknest.app.feature.profil.data.ProfileRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _isFriend = MutableStateFlow<Boolean?>(null)
     val isFriend: StateFlow<Boolean?> = _isFriend
+
+    private val _posts = MutableStateFlow<List<Post>>(emptyList())
+    val posts: StateFlow<List<Post>> = _posts
 
     fun checkIfFriend(currentUserUid: String, targetUserUid: String) {
         viewModelScope.launch {
@@ -118,4 +122,17 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun fetchUserPosts(userId: String) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                _posts.value = repository.loadUserPosts(userId)
+            } catch (e: Exception) {
+                _error.value = "Failed to fetch posts: ${e.message}"
+                Log.e("HomeViewModel", "Error fetching posts: ${e.message}", e)
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
 }
