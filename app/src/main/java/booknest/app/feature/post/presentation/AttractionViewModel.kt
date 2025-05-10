@@ -1,6 +1,5 @@
 package booknest.app.feature.post.presentation
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PostViewModel @Inject constructor(
+class AttractionViewModel @Inject constructor(
     private val repo: AttractionRepository
 ) : ViewModel() {
 

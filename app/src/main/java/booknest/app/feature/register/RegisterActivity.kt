@@ -9,7 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.lifecycleScope
-import booknest.app.feature.home.MainActivity
+import booknest.app.MainActivity
 import booknest.app.R
 import booknest.app.feature.register.presentation.RegisterViewModel
 import com.google.android.material.textfield.TextInputEditText

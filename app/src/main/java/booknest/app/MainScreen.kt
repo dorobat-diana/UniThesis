@@ -1,4 +1,4 @@
-package booknest.app.feature.home
+package booknest.app
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import booknest.app.feature.challanges.ChallengesScreen
 import booknest.app.feature.friends.FriendsListScreen
+import booknest.app.feature.home.HomeScreen
 import booknest.app.feature.map.MapScreen
 import booknest.app.feature.post.PostScreen
 import booknest.app.feature.profil.ProfileScreen

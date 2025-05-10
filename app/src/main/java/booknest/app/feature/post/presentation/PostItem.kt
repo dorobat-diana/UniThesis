@@ -26,7 +26,10 @@ fun PostItem(
     post: Post,
     userName: String,
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
+    onLikeClick: () -> Unit,
+    isLiked: Boolean,
+    likeCount: Int
 ) {
     Column(
         modifier = modifier
@@ -72,16 +75,18 @@ fun PostItem(
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            IconButton(onClick = { /* Handle like click here */ }) {
+            IconButton(onClick = onLikeClick) {
                 Icon(
                     imageVector = Icons.Default.ThumbUp,
-                    contentDescription = "Like"
+                    contentDescription = "Like",
+                    tint = if (isLiked) Color(ContextCompat.getColor(context, R.color.ic_launcher_background)) else Color.Gray
                 )
             }
+
         }
 
         Text(
-            text = "${post.likes.size} ${if (post.likes.size == 1) "like" else "likes"}",
+            text = "${likeCount} ${if (likeCount == 1) "like" else "likes"}",
             color = Color(ContextCompat.getColor(context, R.color.sand_storm)),
             fontSize = 16.sp,
             fontFamily = FontFamily.SansSerif,

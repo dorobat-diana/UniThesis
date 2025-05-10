@@ -5,5 +5,4 @@ import booknest.app.feature.profil.data.UserProfile
 
 interface HomeRepository {
     suspend fun searchUsers(query: String): List<UserProfile>
-    suspend fun getFriendsPosts(userId: String): List<Post>
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import booknest.app.feature.home.data.HomeRepository
 import booknest.app.feature.post.data.Post
+import booknest.app.feature.post.data.PostUiState
 import booknest.app.feature.profil.data.ProfileRepository
 import booknest.app.feature.profil.data.UserProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,9 +19,6 @@ class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
     private val profileRepository: ProfileRepository
 ) : ViewModel() {
-
-    private val _posts = MutableStateFlow<List<Post>>(emptyList())
-    val posts: StateFlow<List<Post>> = _posts
 
     private val _users = MutableStateFlow<List<UserProfile>>(emptyList())
     val users: StateFlow<List<UserProfile>> = _users
@@ -56,20 +54,5 @@ class HomeViewModel @Inject constructor(
     fun clearSearchResults() {
         _users.value = emptyList()
     }
-
-    fun fetchFriendsPosts(userId: String) {
-        viewModelScope.launch {
-            _loading.value = true
-            try {
-                _posts.value = homeRepository.getFriendsPosts(userId)
-            } catch (e: Exception) {
-                _error.value = "Failed to fetch posts: ${e.message}"
-                Log.e("HomeViewModel", "Error fetching posts: ${e.message}", e)
-            } finally {
-                _loading.value = false
-            }
-        }
-    }
-
 
 }

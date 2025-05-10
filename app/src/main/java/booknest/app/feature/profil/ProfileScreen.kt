@@ -251,6 +251,7 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
                                     } else {
                                         viewModel.addFriend(currentUid, uid!!)
                                     }
+                                    viewModel.loadUser(uid)
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
@@ -308,7 +309,7 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
                                 elevation = CardDefaults.cardElevation(4.dp)
                             ) {
                                 Box(modifier = Modifier.padding(12.dp)) {
-                                    PostItem(post = post, userName = user!!.username.toString())
+//                                    PostItem(post = post, userName = user!!.username.toString())
                                 }
                             }
                         }

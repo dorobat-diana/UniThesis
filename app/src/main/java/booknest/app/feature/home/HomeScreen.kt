@@ -18,13 +18,15 @@ import booknest.app.feature.home.presentation.UserItem
 import booknest.app.feature.post.presentation.PostItem
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.text.style.TextAlign
+import booknest.app.feature.post.presentation.PostItemViewModel
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
     val viewModel: HomeViewModel = hiltViewModel()
+    val postViewModel: PostItemViewModel = hiltViewModel()
 
     val users by viewModel.users.collectAsState()
-    val posts by viewModel.posts.collectAsState()
+    val posts by postViewModel.posts.collectAsState()
     val userMap by viewModel.userMap.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
@@ -35,7 +37,7 @@ fun HomeScreen(navController: NavHostController) {
     LaunchedEffect(userId) {
         userId?.let {
             viewModel.loadFriendMap(it)
-            viewModel.fetchFriendsPosts(it)
+            postViewModel.fetchFriendsPosts(it)
         }
     }
 
@@ -98,8 +100,8 @@ fun HomeScreen(navController: NavHostController) {
                     }
                 }
             } else {
-                items(posts) { post ->
-                    val friendName = userMap[post.userId]?.username ?: "Unknown"
+                items(posts) { postUiState ->
+                    val friendName = userMap[postUiState.post.userId]?.username ?: "Unknown"
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -110,10 +112,19 @@ fun HomeScreen(navController: NavHostController) {
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
                         Box(modifier = Modifier.padding(12.dp)) {
-                            PostItem(post = post, userName = friendName)
+                            PostItem(
+                                post = postUiState.post,
+                                userName = friendName,
+                                onLikeClick = {
+                                    postViewModel.toggleLike(userId.toString(), postUiState.post)
+                                },
+                                isLiked = postUiState.isLiked,
+                                likeCount = postUiState.likeCount
+                            )
                         }
                     }
                 }
+
 
                 item {
                     Text(

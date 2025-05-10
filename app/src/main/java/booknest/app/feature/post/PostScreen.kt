@@ -28,14 +28,14 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
-import booknest.app.feature.post.presentation.PostViewModel
+import booknest.app.feature.post.presentation.AttractionViewModel
 import com.google.android.gms.location.*
 import booknest.app.R
 import java.io.File
 
 @Composable
 fun PostScreen(
-    viewModel: PostViewModel = hiltViewModel(),
+    viewModel: AttractionViewModel = hiltViewModel(),
     context: Context = LocalContext.current
 ) {
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }

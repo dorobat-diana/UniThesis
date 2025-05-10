@@ -6,7 +6,6 @@ data class Post(
     val userId: String ? = null,
     val attraction: String ? = null,
     val photoUrl: String ? = null,
-    val likes: List<String> = emptyList(),
     val timestamp: Timestamp? = null
 )
 
