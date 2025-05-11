@@ -1,5 +1,6 @@
 package booknest.app.feature.post.data
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 
@@ -11,5 +12,5 @@ interface AttractionRepository {
         onResult: (List<Attraction>) -> Unit
     )
 
-    suspend fun createPost(string: String, photoUri: Uri): Result<Unit>
+    suspend fun createPost(string: String, photoUri: Uri, context: Context): Result<Unit>
 }

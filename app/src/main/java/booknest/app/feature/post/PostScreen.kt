@@ -65,7 +65,7 @@ fun PostScreen(
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success && photoUri != null) {
-            viewModel.createPost(photoUri!!)
+            viewModel.createPost(photoUri!!, context)
         }
     }
 

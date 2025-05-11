@@ -1,8 +1,12 @@
 package booknest.app.feature.post.data
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.location.Location
 import android.net.Uri
+import android.util.Log
+import androidx.compose.ui.platform.LocalContext
+import booknest.app.feature.utils.RetrofitClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -12,6 +16,12 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.google.firebase.Timestamp
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.await
+import java.io.File
 
 @Singleton
 class AttractionRepositoryImpl @Inject constructor(
@@ -66,15 +76,41 @@ class AttractionRepositoryImpl @Inject constructor(
         return storageRef.downloadUrl.await().toString()
     }
 
-    override suspend fun createPost(attractionId: String, photoUri: Uri): Result<Unit> {
+    override suspend fun createPost(attractionId: String, photoUri: Uri, context: Context): Result<Unit> {
         return try {
             val userId = auth.currentUser?.uid ?: return Result.failure(Exception("User not logged in"))
             val postId = UUID.randomUUID().toString()
 
+            val inputStream = context.contentResolver.openInputStream(photoUri)
+                ?: return Result.failure(Exception("Unable to open input stream from URI"))
+
+            val requestFile = inputStream.readBytes()
+                .toRequestBody("image/jpeg".toMediaTypeOrNull())
+
+            val imagePart = MultipartBody.Part.createFormData(
+                "image", // This must match what Flask expects: request.files['image']
+                "photo.jpg",
+                requestFile
+            )
+            val predictionResponse = RetrofitClient.predictApi.predictImage("predict", imagePart).await()
+
+
+            // Log the prediction result
+            Log.d("CreatePost", "Prediction class: ${predictionResponse.attraction}, Attraction ID: $attractionId")
+
+            // Compare the predicted class with the attraction's ID (or class)
+            if (predictionResponse.attraction != attractionId) {
+                // Log and return failure if the classes don't match
+                Log.d("CreatePost", "Post creation failed: Predicted class does not match attraction ID.")
+                return Result.failure(Exception("Predicted class does not match attraction ID"))
+            }
+
+            // Upload image to Firebase Storage
             val storageRef = storage.reference.child("posts/$postId.jpg")
             storageRef.putFile(photoUri).await()
             val photoUrl = storageRef.downloadUrl.await().toString()
 
+            // Create a new Post object
             val post = Post(
                 uid = postId,
                 userId = userId,
@@ -83,14 +119,24 @@ class AttractionRepositoryImpl @Inject constructor(
                 timestamp = Timestamp(System.currentTimeMillis() / 1000, 0)
             )
 
+            // Save the post in Firestore
             firestore.collection("posts").document(postId).set(post).await()
+
+            // Update the user's post count in Firestore
             val userRef = firestore.collection("users").document(userId)
             userRef.update("postsCount", com.google.firebase.firestore.FieldValue.increment(1)).await()
 
+            // Log success
+            Log.d("CreatePost", "Post successfully created with ID: $postId")
+
             Result.success(Unit)
         } catch (e: Exception) {
+            // Log error if any
+            Log.e("CreatePost", "Error creating post: ${e.message}", e)
             Result.failure(e)
         }
+//        TODO: Behavior if photo does not match attraction
     }
+
 
 }
