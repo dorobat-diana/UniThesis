@@ -135,8 +135,7 @@ class AttractionRepositoryImpl @Inject constructor(
             Log.e("CreatePost", "Error creating post: ${e.message}", e)
             Result.failure(e)
         }
-//        TODO: Behavior if photo does not match attraction
-    }
 
+    }
 
 }

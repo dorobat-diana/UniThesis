@@ -2,6 +2,7 @@ package booknest.app.feature.post.presentation
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -50,8 +52,10 @@ class AttractionViewModel @Inject constructor(
 
     fun createPost(photoUri: Uri,context: Context) {
         val attractionId = _selectedAttraction.value ?: return
+        Log.d("CreatePost", "selected class: ${attractionId}")
         viewModelScope.launch {
             val result = repo.createPost(attractionId, photoUri,context )
+            Log.d("CreatePost", "post created")
             _postCreationStatus.value = result
         }
     }
