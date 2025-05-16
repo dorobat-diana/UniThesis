@@ -6,6 +6,7 @@ import android.location.Location
 import android.net.Uri
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
+import booknest.app.feature.profil.data.UserProfile
 import booknest.app.feature.utils.RetrofitClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,6 +17,7 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -140,6 +142,49 @@ class AttractionRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
 
+    }
+
+    override suspend fun getVisitedAttractionsByName(attractionNames: List<String>): List<Attraction> {
+        val attractions = mutableListOf<Attraction>()
+        val nameChunks = attractionNames.chunked(10)
+
+        for (chunk in nameChunks) {
+            val snapshot = firestore.collection("attractions")
+                .whereIn("name", chunk)
+                .get()
+                .await()
+
+            for (doc in snapshot.documents) {
+                val name = doc.getString("name") ?: continue
+                val coords = doc.getGeoPoint("coordinates") ?: continue
+                attractions.add(
+                    Attraction(
+                        uid = doc.id,
+                        name = name,
+                        coordinates = coords
+                    )
+                )
+            }
+        }
+        return attractions
+    }
+
+    override suspend fun getUserProfileByUid(uid: String): UserProfile? {
+        return try {
+            val docSnapshot = firestore.collection("users")
+                .document(uid)
+                .get()
+                .await()
+
+            if (docSnapshot.exists()) {
+                docSnapshot.toObject(UserProfile::class.java)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 }

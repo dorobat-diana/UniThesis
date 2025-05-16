@@ -33,7 +33,7 @@ fun MainScreen(uid: String?) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Home.route) { HomeScreen(navController = navController) }
-            composable(BottomNavItem.Map.route) { MapScreen() }
+            composable(BottomNavItem.Map.route) { MapScreen(uid.toString()) }
             composable(BottomNavItem.Post.route) { PostScreen() }
             composable(BottomNavItem.Challenges.route) { ChallengesScreen() }
             composable(BottomNavItem.Profile.route) { ProfileScreen(navController = navController, uid) }
