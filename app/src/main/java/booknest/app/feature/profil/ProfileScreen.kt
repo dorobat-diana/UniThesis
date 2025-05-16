@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -218,6 +219,39 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
                         color = colorResource(id = R.color.sand_storm)
                     )
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                val postsPerLevel = 5
+                val level = user!!.level
+                val progress = (user!!.postsCount % postsPerLevel) / postsPerLevel.toFloat()
+                val postsRemaining = postsPerLevel - (user!!.postsCount % postsPerLevel)
+
+                Column(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
+                    Text(
+                        text = "Level $level",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        color = colorResource(id = R.color.sand_storm),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+
+                    LinearProgressIndicator(
+                        progress = progress,
+                        color = colorResource(id = R.color.citric),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(MaterialTheme.shapes.small)
+                    )
+
+                    Text(
+                        text = "$postsRemaining posts to next level",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colorResource(id = R.color.sand_storm),
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp)
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 

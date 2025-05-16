@@ -132,6 +132,28 @@ class AttractionRepositoryImpl @Inject constructor(
             // Add the attraction ID to the user's visited attractions list (if not already present)
             userRef.update("visitedAttractions", FieldValue.arrayUnion(attractionId)).await()
 
+            // After saving post and updating postsCount & visitedAttractions:
+
+            val userDoc = userRef.get().await()
+            val currentLevel = userDoc.getLong("level") ?: 1L
+            val postsCount = userDoc.getLong("postsCount") ?: 0L
+
+            // Define a simple level threshold function:
+            fun getLevelThreshold(level: Long): Long {
+                return level * 5  // For example: level 1 requires 5 posts, level 2 requires 10, etc.
+            }
+
+            // Check if user qualifies for next level
+            val nextLevelThreshold = getLevelThreshold(currentLevel)
+            if (postsCount >= nextLevelThreshold) {
+                // Increment the level
+                userRef.update("level", FieldValue.increment(1)).await()
+                Log.d("CreatePost", "User level incremented to ${currentLevel + 1}")
+            } else {
+                Log.d("CreatePost", "User level remains at $currentLevel")
+            }
+
+
             // Log success
             Log.d("CreatePost", "Post successfully created with ID: $postId")
 
