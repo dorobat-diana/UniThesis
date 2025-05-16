@@ -16,6 +16,7 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -124,7 +125,10 @@ class AttractionRepositoryImpl @Inject constructor(
 
             // Update the user's post count in Firestore
             val userRef = firestore.collection("users").document(userId)
-            userRef.update("postsCount", com.google.firebase.firestore.FieldValue.increment(1)).await()
+            userRef.update("postsCount", FieldValue.increment(1)).await()
+
+            // Add the attraction ID to the user's visited attractions list (if not already present)
+            userRef.update("visitedAttractions", FieldValue.arrayUnion(attractionId)).await()
 
             // Log success
             Log.d("CreatePost", "Post successfully created with ID: $postId")

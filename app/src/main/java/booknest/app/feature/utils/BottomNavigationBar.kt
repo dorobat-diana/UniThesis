@@ -15,7 +15,7 @@ import booknest.app.R
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
         BottomNavItem.Home,
-//        BottomNavItem.Map,
+        BottomNavItem.Map,
         BottomNavItem.Post,
 //        BottomNavItem.Challenges,
         BottomNavItem.Profile

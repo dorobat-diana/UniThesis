@@ -95,4 +95,8 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
 
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+
+
 }

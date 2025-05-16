@@ -35,6 +35,9 @@ class AttractionViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _isCreatingPost = MutableStateFlow(false)
+    val isCreatingPost: StateFlow<Boolean> = _isCreatingPost
+
 
     fun onAttractionSelected(name: String) {
         _selectedAttraction.value = name
@@ -54,9 +57,11 @@ class AttractionViewModel @Inject constructor(
         val attractionId = _selectedAttraction.value ?: return
         Log.d("CreatePost", "selected class: ${attractionId}")
         viewModelScope.launch {
+            _isCreatingPost.value = true
             val result = repo.createPost(attractionId, photoUri,context )
             Log.d("CreatePost", "post created")
             _postCreationStatus.value = result
+            _isCreatingPost.value = false
         }
     }
 

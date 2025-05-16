@@ -1,9 +1,12 @@
 package booknest.app.feature.map
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxSize
+import com.google.maps.android.compose.GoogleMap
 @Composable
 fun MapScreen() {
-    Text("Map - Places You’ve Visited")
+    GoogleMap(
+        modifier = Modifier.fillMaxSize()
+    )
 }

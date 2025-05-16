@@ -1,5 +1,7 @@
 package booknest.app.feature.profil.data
 
+import booknest.app.feature.post.data.Attraction
+
 data class UserProfile(
     val uid: String? = null,
     val email: String? = null,
@@ -8,7 +10,8 @@ data class UserProfile(
     val caption: String = "",
     val friendsCount: Int = 0,
     val postsCount: Int = 0,
-    val friends: List<String> = emptyList()
+    val friends: List<String> = emptyList(),
+    val visitedAttractions: List<String> = emptyList()
 ) {
     constructor() : this(null, null, null, null, "", 0, 0)
 }

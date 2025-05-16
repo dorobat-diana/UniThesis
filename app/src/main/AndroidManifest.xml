@@ -32,6 +32,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBaixCyUsOeIairzk_kPZ8Dj4ZRl7V59EY"/>
+
         <activity
             android:name=".feature.login.LogInActivity"
             android:exported="true" >

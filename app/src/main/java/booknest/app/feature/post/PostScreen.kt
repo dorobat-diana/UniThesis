@@ -56,6 +56,7 @@ fun PostScreen(
 
     val isLoading by viewModel.isLoading.collectAsState()
 
+    val isCreatingPost by viewModel.isCreatingPost.collectAsState()
 
     val locationPermissionRequest = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -246,5 +247,26 @@ fun PostScreen(
                 )
             }
         }
+        if (isCreatingPost) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.6f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator(
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "AI validation...",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontStyle = FontStyle.Italic
+                    )
+                }
+            }
         }
+    }
 }
