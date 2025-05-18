@@ -13,6 +13,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.runtime.State
+import booknest.app.feature.challanges.data.ChallengeRepository
+import booknest.app.feature.profil.data.ProfileRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -20,7 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AttractionViewModel @Inject constructor(
-    private val repo: AttractionRepository
+    private val repo: AttractionRepository,
+    private val challengeRepo: ChallengeRepository,
+    private val userRepo : ProfileRepository
 ) : ViewModel() {
 
     private val _nearbyAttractions = mutableStateListOf<Attraction>()
@@ -53,12 +57,16 @@ class AttractionViewModel @Inject constructor(
         }
     }
 
-    fun createPost(photoUri: Uri,context: Context) {
+    fun createPost(userId: String,photoUri: Uri,context: Context) {
         val attractionId = _selectedAttraction.value ?: return
         Log.d("CreatePost", "selected class: ${attractionId}")
         viewModelScope.launch {
             _isCreatingPost.value = true
             val result = repo.createPost(attractionId, photoUri,context )
+            if (result.isSuccess) {
+                challengeRepo.handleChallengeProgress(userId,attractionId)
+                userRepo.updateUserLevel(userId)
+            }
             Log.d("CreatePost", "post created")
             _postCreationStatus.value = result
             _isCreatingPost.value = false

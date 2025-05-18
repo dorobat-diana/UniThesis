@@ -218,6 +218,11 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
                         style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
                         color = colorResource(id = R.color.sand_storm)
                     )
+                    Text(
+                        text = "Challenges: ${profile.completedChallenges}",
+                        style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
+                        color = colorResource(id = R.color.sand_storm)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

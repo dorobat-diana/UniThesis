@@ -82,6 +82,85 @@ class ChallengesRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun handleChallengeProgress(userId: String, attractionName: String) {
+        val userChallengesSnapshot = userChallengesCollection
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("status", "IN_PROGRESS")
+            .get()
+            .await()
+
+        for (userChallengeDoc in userChallengesSnapshot.documents) {
+            val challengeId = userChallengeDoc.getString("activeChallengeId") ?: continue
+            val challengeDoc = challengesCollection.document(challengeId).get().await()
+            val challenge = challengeDoc.toObject<Challenge>() ?: continue
+
+            if (challenge.attractionsToFind.contains(attractionName)) {
+                val currentFound = userChallengeDoc.get("attractionsFound") as? List<String> ?: emptyList()
+                if (!currentFound.contains(attractionName)) {
+                    val updatedFound = currentFound + attractionName
+
+                    val updates = mutableMapOf<String, Any>(
+                        "attractionsFound" to updatedFound
+                    )
+
+                    if (updatedFound.toSet() == challenge.attractionsToFind.toSet()) {
+                        updates["status"] = "FINISHED"
+                        incrementUserLevel(userId, 1)
+                        incrementUserChallenges(userId,1)
+                    }
+
+                    userChallengeDoc.reference.update(updates).await()
+                }
+            }
+        }
+    }
+
+    private suspend fun incrementUserLevel(userId: String, incrementBy: Int) {
+        val userRef = firestore.collection("users").document(userId)
+        firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(userRef)
+            val currentLevel = snapshot.getLong("level") ?: 0
+            transaction.update(userRef, "level", currentLevel + incrementBy)
+        }.await()
+    }
+
+    private suspend fun incrementUserChallenges(userId: String, incrementBy: Int) {
+        val userRef = firestore.collection("users").document(userId)
+        firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(userRef)
+            val currentLevel = snapshot.getLong("completedChallenges") ?: 0
+            transaction.update(userRef, "completedChallenges", currentLevel + incrementBy)
+        }.await()
+    }
+
+    override suspend fun getUserFinishedChallenges(userId: String): List<Challenge> {
+        val userChallengesSnapshot = userChallengesCollection
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("status", "FINISHED")
+            .get()
+            .await()
+
+        if (userChallengesSnapshot.isEmpty) {
+            return emptyList()
+        }
+
+        return userChallengesSnapshot.documents.mapNotNull { userChallengeDoc ->
+            val challengeId = userChallengeDoc.getString("activeChallengeId") ?: return@mapNotNull null
+            val challengeSnapshot = challengesCollection.document(challengeId).get().await()
+            challengeSnapshot.toObject<Challenge>()?.copy(id = challengeSnapshot.id)
+        }
+    }
+
+    override suspend fun getUserChallenges(userId: String): List<UserChallenge> {
+        val snapshot = userChallengesCollection
+            .whereEqualTo("userId", userId)
+            .get()
+            .await()
+
+        return snapshot.documents.mapNotNull { doc ->
+            doc.toObject<UserChallenge>()
+        }
+    }
 
     override suspend fun startChallengeForUser(userId: String, challengeId: String) {
         try {
@@ -126,7 +205,4 @@ class ChallengesRepositoryImpl @Inject constructor(
             throw e
         }
     }
-
-    //TODO: logic for terminating the challenge after deadline, logic for increasing the level after
-    // a challenge, logic for created posts contributing to challenge, maybe different screen with to dos for the challenge
 }

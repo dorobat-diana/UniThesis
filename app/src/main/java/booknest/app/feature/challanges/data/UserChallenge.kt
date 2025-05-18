@@ -8,4 +8,12 @@ data class UserChallenge(
     val attractionsFound: List<String> = emptyList(),
     val startedAt: Timestamp,
     val status: String
-)
+){
+    constructor() : this(
+        userId = "",
+        activeChallengeId = "",
+        attractionsFound = emptyList(),
+        startedAt = Timestamp.now(),
+        status = ""
+    )
+}

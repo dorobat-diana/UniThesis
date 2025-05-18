@@ -162,4 +162,28 @@ class ProfileRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateUserLevel(userId: String) {
+        val userRef = firestore.collection("users").document(userId)
+        try {
+            val doc = userRef.get().await()
+            val userProfile = doc.toObject(UserProfile::class.java) ?: return
+
+            val currentLevel = userProfile.level
+            val postsCount = userProfile.postsCount
+            val completedChallenges = userProfile.completedChallenges
+
+            val totalPoints = postsCount + completedChallenges * 5
+            val nextLevelRequirement = (currentLevel + 1) * 5
+
+            if (totalPoints >= nextLevelRequirement) {
+                val newLevel = currentLevel + 1
+                userRef.update("level", newLevel).await()
+                Log.d("ProfileRepository", "User $userId leveled up to level $newLevel")
+            }
+        } catch (e: Exception) {
+            Log.e("ProfileRepository", "Failed to update user level: ${e.message}", e)
+        }
+    }
+
+
 }

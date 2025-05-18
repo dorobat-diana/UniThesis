@@ -40,6 +40,7 @@ import java.io.File
 
 @Composable
 fun PostScreen(
+    userId: String,
     viewModel: AttractionViewModel = hiltViewModel(),
     context: Context = LocalContext.current
 ) {
@@ -71,7 +72,7 @@ fun PostScreen(
 
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success && photoUri != null) {
-            viewModel.createPost(photoUri!!, context)
+            viewModel.createPost(userId,photoUri!!, context)
         }
     }
 

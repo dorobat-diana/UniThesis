@@ -34,7 +34,7 @@ fun MainScreen(uid: String?) {
         ) {
             composable(BottomNavItem.Home.route) { HomeScreen(navController = navController) }
             composable(BottomNavItem.Map.route) { MapScreen(uid.toString()) }
-            composable(BottomNavItem.Post.route) { PostScreen() }
+            composable(BottomNavItem.Post.route) { PostScreen(uid.toString()) }
             composable(BottomNavItem.Challenges.route) { ChallengesScreen(uid.toString()) }
             composable(BottomNavItem.Profile.route) { ProfileScreen(navController = navController, uid) }
             composable(
