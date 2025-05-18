@@ -35,8 +35,15 @@ class ChallengesViewModel @Inject constructor(
     fun startChallenge(userId: String, challengeId: String) {
         viewModelScope.launch {
             repository.startChallengeForUser(userId, challengeId.toString())
-            // Reload after starting challenge
             loadChallenges(userId)
         }
     }
+
+    fun refreshChallenges(userId: String) {
+        viewModelScope.launch {
+            repository.checkAndTerminateExpiredChallenges(userId)
+            loadChallenges(userId)
+        }
+    }
+
 }

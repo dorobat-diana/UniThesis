@@ -33,7 +33,7 @@ fun ChallengesScreen(
     val activeChallenges by viewModel.activeChallenges.collectAsState()
 
     LaunchedEffect(userId) {
-        viewModel.loadChallenges(userId)
+        viewModel.refreshChallenges(userId)
     }
 
     Column(

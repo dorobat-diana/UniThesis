@@ -59,6 +59,28 @@ class ChallengesRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun checkAndTerminateExpiredChallenges(userId: String) {
+        val userChallengesSnapshot = userChallengesCollection
+            .whereEqualTo("userId", userId)
+            .whereEqualTo("status", "IN_PROGRESS")
+            .get()
+            .await()
+
+        for (doc in userChallengesSnapshot.documents) {
+            val challengeId = doc.getString("activeChallengeId") ?: continue
+            val challengeDoc = challengesCollection.document(challengeId).get().await()
+            val challenge = challengeDoc.toObject<Challenge>() ?: continue
+
+            val startedAt = doc.getTimestamp("startedAt") ?: continue
+            val deadlineMillis = startedAt.toDate().time + challenge.timeLimit * 24 * 60 * 60 * 1000
+            val deadline = Timestamp(deadlineMillis / 1000, 0)
+
+            val now = Timestamp.now()
+            if (now > deadline) {
+                doc.reference.delete().await()  // ⬅ Delete the document instead of updating status
+            }
+        }
+    }
 
 
     override suspend fun startChallengeForUser(userId: String, challengeId: String) {
