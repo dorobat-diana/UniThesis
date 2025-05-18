@@ -17,7 +17,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.Home,
         BottomNavItem.Map,
         BottomNavItem.Post,
-//        BottomNavItem.Challenges,
+        BottomNavItem.Challenges,
         BottomNavItem.Profile
     )
 

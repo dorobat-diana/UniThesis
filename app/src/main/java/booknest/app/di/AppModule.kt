@@ -1,5 +1,7 @@
 package booknest.app.di
 
+import booknest.app.feature.challanges.data.ChallengeRepository
+import booknest.app.feature.challanges.data.ChallengesRepositoryImpl
 import booknest.app.feature.home.data.HomeRepository
 import booknest.app.feature.home.data.HomeRepositoryImpl
 import booknest.app.feature.post.data.AttractionRepository
@@ -67,5 +69,13 @@ object AppModule {
         storage: FirebaseStorage
     ): AttractionRepository {
         return AttractionRepositoryImpl(auth, firestore, storage)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChallengeRepository(
+        firestore: FirebaseFirestore
+    ): ChallengeRepository {
+        return ChallengesRepositoryImpl(firestore)
     }
 }
