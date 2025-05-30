@@ -1,15 +1,20 @@
 package booknest.app.feature.utils
 
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-import java.io.File
+import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
+    val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
+
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:5000")
+        .baseUrl("https://licentaserver.onrender.com/")
+        .client(okHttpClient)
         .client(OkHttpClient.Builder().build())
         .addConverterFactory(GsonConverterFactory.create())
         .build()

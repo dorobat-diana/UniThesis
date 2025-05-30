@@ -90,12 +90,26 @@ class AttractionRepositoryImpl @Inject constructor(
             val requestFile = inputStream.readBytes()
                 .toRequestBody("image/jpeg".toMediaTypeOrNull())
 
+            Log.d("CreatePost", "Image size: ${requestFile.contentLength()}")
+
             val imagePart = MultipartBody.Part.createFormData(
                 "image", // This must match what Flask expects: request.files['image']
                 "photo.jpg",
                 requestFile
             )
             val predictionResponse = RetrofitClient.predictApi.predictImage("predict", imagePart).await()
+
+            try {
+                val response = RetrofitClient.predictApi.predictImage("predict", imagePart).execute()
+                if (response.isSuccessful) {
+                    val prediction = response.body()?.attraction
+                    Log.d("CreatePost", "Prediction successful: $prediction")
+                } else {
+                    Log.e("CreatePost", "Prediction failed with code: ${response.code()}, body: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("CreatePost", "Network call failed: ${e.message}", e)
+            }
 
 
             // Log the prediction result

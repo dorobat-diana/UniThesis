@@ -1,23 +1,18 @@
 package booknest.app.feature.utils
 
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
-import retrofit2.http.Url
+import retrofit2.http.*
+
+data class PredictionResponse(val attraction: String)
 
 interface PredictApi {
     @Multipart
-    @POST
+    @POST("{endpoint}")
     fun predictImage(
-        @Url url: String,
+        @Path("endpoint") endpoint: String,
         @Part image: MultipartBody.Part
-    ): Call<PredictionResult>
+    ): Call<PredictionResponse>
 }
 
-
-data class PredictionResult(val attraction: String)
 
