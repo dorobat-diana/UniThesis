@@ -1,6 +1,5 @@
 package booknest.app.feature.challanges
 
-import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,7 +12,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -23,8 +21,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import booknest.app.R
-import booknest.app.feature.challanges.data.Challenge
 import booknest.app.feature.challanges.presentation.ChallengesViewModel
+import booknest.app.feature.challanges.presentation.ChallengeCard
 
 @Composable
 fun ChallengesScreen(
@@ -121,91 +119,6 @@ fun ChallengesScreen(
     }
 }
 
-
-@Composable
-fun ChallengeCard(
-    challenge: Challenge,
-    challengeStatus: String, // "active", "available", "finished"
-    visitedAttractions: List<String> = emptyList(),
-    onStartClick: () -> Unit = {}
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = dimensionResource(id = R.dimen.padding_small).value.dp),
-        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.citric)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(dimensionResource(id = R.dimen.padding_medium).value.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = challenge.title,
-                fontSize = dimensionResource(id = R.dimen.font_size_title).value.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.sand_storm),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                text = challenge.description,
-                fontSize = 14.sp,
-                fontStyle = FontStyle.Italic,
-                color = colorResource(id = R.color.sand_storm),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                text = "Time limit: ${challenge.timeLimit} days",
-                fontSize = 13.sp,
-                color = colorResource(id = R.color.sand_storm)
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            if (challengeStatus == "active") {
-                StyledBodyText("Checklist:", color = colorResource(id = R.color.sand_storm))
-                challenge.attractionsToFind.forEach { attraction ->
-                    val found = visitedAttractions.contains(attraction)
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(checked = found, onCheckedChange = null, enabled = false)
-                        Text(
-                            text = attraction,
-                            fontWeight = if (found) FontWeight.Bold else FontWeight.Normal,
-                            color = colorResource(id = R.color.sand_storm)
-                        )
-                    }
-                }
-            }
-
-            if (challengeStatus == "available") {
-                Spacer(Modifier.height(8.dp))
-                Button(
-                    onClick = onStartClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(id = R.color.selected),
-                        contentColor = colorResource(id = R.color.splash_screen_background)
-                    )
-                ) {
-                    Text("Start Challenge", fontWeight = FontWeight.Bold)
-                }
-            }
-
-            if (challengeStatus == "finished") {
-                StyledBodyText("✅ Challenge completed!", color = colorResource(id = R.color.sand_storm))
-            }
-        }
-    }
-}
-
 @Composable
 fun StyledHeader(text: String) {
     Text(
@@ -214,7 +127,6 @@ fun StyledHeader(text: String) {
         fontFamily = FontFamily.Serif,
         fontWeight = FontWeight.ExtraBold,
         color = colorResource(id = R.color.sand_storm),
-        fontStyle = FontStyle.Italic,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()
     )
@@ -228,7 +140,6 @@ fun StyledSectionTitle(text: String) {
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Bold,
         color = colorResource(id = R.color.sand_storm),
-        fontStyle = FontStyle.Italic,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()
     )
@@ -236,13 +147,12 @@ fun StyledSectionTitle(text: String) {
 }
 
 @Composable
-fun StyledBodyText(text: String, color: Color = colorResource(id = R.color.white)) {
+fun StyledBodyText(text: String, color: Color = colorResource(id = R.color.sand_storm)) {
     Text(
         text = text,
         fontSize = dimensionResource(id = R.dimen.font_size_body).value.sp,
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Normal,
-        fontStyle = FontStyle.Italic,
         color = color,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth()

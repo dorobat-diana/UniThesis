@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import booknest.app.R
 
@@ -44,7 +45,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = colorResource(id = R.color.selected),
-                    unselectedIconColor = colorResource(id = R.color.unselected)
+                    unselectedIconColor = colorResource(id = R.color.burn_red),
+                    indicatorColor = Color.Transparent
                 ),
                 alwaysShowLabel = false
             )

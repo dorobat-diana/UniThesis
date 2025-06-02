@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
@@ -218,11 +219,12 @@ fun PostScreen(
                                         photoUri = uri
                                         launcher.launch(uri)
                                     }
+                                    .shadow(20.dp)
                                     .background(
                                         Color(
                                             ContextCompat.getColor(
                                                 context,
-                                                R.color.citric
+                                                R.color.burn_red
                                             )
                                         )
                                     )

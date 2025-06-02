@@ -3,43 +3,32 @@ package booknest.app.feature.profil
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import booknest.app.feature.profil.presentation.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 import booknest.app.R
-import booknest.app.feature.home.presentation.UserItem
 import booknest.app.feature.post.presentation.PostItem
 import booknest.app.feature.post.presentation.PostItemViewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import kotlin.collections.get
+import booknest.app.feature.profil.presentation.ProfileHeaderInfo
+
 
 @Composable
 fun ProfileScreen(navController: NavHostController, uid: String?, context: Context = LocalContext.current) {
@@ -50,7 +39,7 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
     val isOwnProfile = currentUserUid == uid
 
     val user by viewModel.profile.collectAsState()
-    val loading by postViewModel.loading.collectAsState()
+    val loadingPosts by postViewModel.loading.collectAsState()
     val loadingProfile by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
     val isFriend by viewModel.isFriend.collectAsState()
@@ -66,6 +55,9 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
         }
     }
 
+    // Pre-fetch colors to pass them down, avoiding repeated calls to colorResource
+    val sandStormColor = colorResource(id = R.color.sand_storm)
+    val citricColor = colorResource(id = R.color.citric)
 
     LaunchedEffect(uid) {
         uid?.let {
@@ -77,327 +69,144 @@ fun ProfileScreen(navController: NavHostController, uid: String?, context: Conte
         }
     }
 
-        if (user != null) {
-            val profile = user!!
+    if (loadingProfile && user == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = sandStormColor)
+        }
+    } else if (user != null) {
+        val profile = user!!
 
-            LaunchedEffect(profile) {
+        LaunchedEffect(profile, isOwnProfile) { // Re-initialize if profile changes or it becomes own profile editing
+            if (isOwnProfile) {
                 editedUsername = profile.username ?: ""
-                editedCaption = profile.caption
+                editedCaption = profile.caption ?: ""
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp), // Horizontal padding will be handled by items if needed or can be added here
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Back Button (if not own profile)
+            if (!isOwnProfile) {
+                item {
+                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) { // Added horizontal padding to align with content
+                        IconButton(
+                            onClick = { navController.popBackStack() },
+                            modifier = Modifier.align(Alignment.CenterStart)
+                        ) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = sandStormColor)
+                        }
+                    }
+                }
             }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                if (!isOwnProfile) {
-                    IconButton(
-                        onClick = { navController.popBackStack() },
-                        modifier = Modifier.align(Alignment.Start)
+            // New Profile Header Item
+            item {
+                Box(modifier = Modifier.padding(horizontal = 16.dp)) { // Apply horizontal padding to this section
+                    ProfileHeaderInfo(
+                        profile = profile,
+                        isOwnProfile = isOwnProfile,
+                        isEditing = isEditing,
+                        onEditToggle = { isEditing = !isEditing },
+                        editedUsername = editedUsername,
+                        onUsernameChange = { editedUsername = it },
+                        editedCaption = editedCaption,
+                        onCaptionChange = { editedCaption = it },
+                        onUpdateProfile = { viewModel.updateProfile(editedUsername, editedCaption) },
+                        onProfilePicChangeLaunch = { launcher.launch(null) },
+                        isFriend = isFriend,
+                        currentUserUid = currentUserUid,
+                        targetUid = uid,
+                        onAddFriend = { curUid, tarUid -> viewModel.addFriend(curUid, tarUid) },
+                        onRemoveFriend = { curUid, tarUid -> viewModel.removeFriend(curUid, tarUid) },
+                        navController = navController,
+                        sandStormColor = sandStormColor,
+                        citricColor = citricColor
+                    )
+                }
+            }
+
+            // Spacer and Divider
+            item {
+                Spacer(modifier = Modifier.height(24.dp)) // Increased space before divider
+                Divider(
+                    color = sandStormColor.copy(alpha = 0.5f), // Make divider a bit subtle
+                    thickness = 1.dp,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp) // Padding for divider
+                )
+                Spacer(modifier = Modifier.height(16.dp)) // Space after divider, before posts
+            }
+
+            // Posts Section
+            if (loadingPosts && posts.isEmpty()) {
+                item {
+                    CircularProgressIndicator(color = sandStormColor, modifier = Modifier.padding(16.dp))
+                }
+            } else if (posts.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = colorResource(id = R.color.sand_storm))
+                        Text("No posts yet", style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic), color = sandStormColor)
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .clip(CircleShape)
-                        .clickable(enabled = isOwnProfile) {
-                            if (isOwnProfile) {
-                                launcher.launch(null)
-                            }
-                        }
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(profile.profilePictureUrl),
-                        contentDescription = "Profile picture",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape)
-                    )
-                    if (isOwnProfile) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color(0x55000000), shape = CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Edit",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Color.White
-                            )
-                        }
-                    }
-                }
-
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                if (isEditing) {
-                    OutlinedTextField(
-                        value = editedUsername,
-                        onValueChange = { editedUsername = it },
-                        label = { Text("Username") },
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(
-                            color = colorResource(
-                                id = R.color.sand_storm
-                            )
-                        ),
-                        colors =  OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = colorResource(id = R.color.sand_storm),
-                            unfocusedTextColor = colorResource(id = R.color.sand_storm),
-                            cursorColor = colorResource(id = R.color.sand_storm),
-                            focusedLabelColor = colorResource(id = R.color.sand_storm),
-                            unfocusedLabelColor = colorResource(id = R.color.sand_storm),
-                            focusedBorderColor = colorResource(id = R.color.sand_storm),
-                            unfocusedBorderColor = colorResource(id = R.color.sand_storm)
-                        ),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    Text(
-                        text = profile.username ?: "No username",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
-                        color = colorResource(id = R.color.sand_storm),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                }
-
-                if (isEditing) {
-                    OutlinedTextField(
-                        value = editedCaption,
-                        onValueChange = { editedCaption = it },
-                        label = { Text("Caption") },
-                        textStyle = MaterialTheme.typography.bodyMedium.copy(
-                            color = colorResource(
-                                id = R.color.sand_storm
-                            )
-                        ),
-                        colors =  OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = colorResource(id = R.color.sand_storm),
-                            unfocusedTextColor = colorResource(id = R.color.sand_storm),
-                            cursorColor = colorResource(id = R.color.sand_storm),
-                            focusedLabelColor = colorResource(id = R.color.sand_storm),
-                            unfocusedLabelColor = colorResource(id = R.color.sand_storm),
-                            focusedBorderColor = colorResource(id = R.color.sand_storm),
-                            unfocusedBorderColor = colorResource(id = R.color.sand_storm)
-                        ),
+            } else {
+                items(posts, key = { it.post.uid ?: java.util.UUID.randomUUID().toString() }) { postUiState ->
+                    val userName = profile.username ?: "Unknown User" // Posts still need username for PostItem
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp)
-                    )
-                } else {
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 12.dp)
+                            .shadow(
+                                elevation = 20.dp, // Higher elevation = deeper shadow
+                                shape = RoundedCornerShape(16.dp), // More curve = softer shadow edge
+                                ambientColor = Color.Black.copy(alpha = 0.6f), // Darker ambient shadow
+                                spotColor = Color.Black.copy(alpha = 0.6f) // Darker directional shadow
+                            ),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.burn_red)),
+                        elevation = CardDefaults.cardElevation(0.dp) // Remove default elevation to avoid doubling
+                    ) {
+                        PostItem( // Assuming PostItem is defined elsewhere as per previous steps
+                            post = postUiState.post,
+                            userName = userName,
+                            onLikeClick = { currentUserUid?.let { likerId -> postViewModel.toggleLike(likerId, postUiState.post) } },
+                            isLiked = postUiState.isLiked,
+                            likeCount = postUiState.likeCount
+                        )
+                    }
+                }
+            }
+
+            // Loading indicator for more posts
+            if (loadingPosts && posts.isNotEmpty()) {
+                item {
+                    CircularProgressIndicator(color = sandStormColor, modifier = Modifier.padding(16.dp))
+                }
+            }
+
+            // Error message
+            error?.let {
+                item {
                     Text(
-                        text = profile.caption.ifEmpty { "No caption yet" },
-                        style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic),
-                        color = colorResource(id = R.color.sand_storm),
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
                         textAlign = TextAlign.Center
                     )
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Text(
-                        text = "Friends: ${profile.friendsCount}",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
-                        color = colorResource(id = R.color.sand_storm),
-                        modifier = Modifier.clickable {
-                            navController.navigate("friends_screen/${profile.uid}")
-                        }
-                    )
-                    Text(
-                        text = "Posts: ${profile.postsCount}",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
-                        color = colorResource(id = R.color.sand_storm)
-                    )
-                    Text(
-                        text = "Challenges: ${profile.completedChallenges}",
-                        style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
-                        color = colorResource(id = R.color.sand_storm)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                val postsPerLevel = 5
-                val level = user!!.level
-                val progress = (user!!.postsCount % postsPerLevel) / postsPerLevel.toFloat()
-                val postsRemaining = postsPerLevel - (user!!.postsCount % postsPerLevel)
-
-                Column(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
-                    Text(
-                        text = "Level $level",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = colorResource(id = R.color.sand_storm),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-
-                    LinearProgressIndicator(
-                        progress = progress,
-                        color = colorResource(id = R.color.citric),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(MaterialTheme.shapes.small)
-                    )
-
-                    Text(
-                        text = "$postsRemaining posts to next level",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = colorResource(id = R.color.sand_storm),
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 4.dp)
-                    )
-                }
-
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                if (isOwnProfile) {
-                    Button(
-                        onClick = {
-                            if (isEditing) {
-                                viewModel.updateProfile(editedUsername, editedCaption)
-                            }
-                            isEditing = !isEditing
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(id = R.color.citric),
-                            contentColor = Color.White
-                        ),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        Text(if (isEditing) "Save" else "Edit Profile")
-                    }
-                }
-
-                if (!isOwnProfile && isFriend != null) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Button(
-                            onClick = {
-                                currentUserUid?.let { currentUid ->
-                                    if (isFriend == true) {
-                                        viewModel.removeFriend(currentUid, uid!!)
-                                    } else {
-                                        viewModel.addFriend(currentUid, uid!!)
-                                    }
-                                    viewModel.loadUser(uid)
-                                }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = colorResource(id = R.color.citric)
-                            )
-                        ) {
-                            Text(
-                                text = if (isFriend == true) "Unfriend" else "Add Friend",
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    color = Color.White,
-                                    fontStyle = FontStyle.Italic
-                                )
-                            )
-                        }
-                    }
-                }
-
-                Divider(
-                    color = colorResource(id = R.color.sand_storm),
-                    thickness = 2.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp)
-                )
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(bottom = 80.dp)
-                ) {
-                    if (posts.isEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .wrapContentSize(Alignment.Center)
-                            ) {
-                                Text(
-                                    text = "No posts yet",
-                                    style = MaterialTheme.typography.headlineSmall.copy(fontStyle = FontStyle.Italic),
-                                    color = colorResource(id = R.color.sand_storm)
-                                )
-                            }
-                        }
-                    } else {
-                        items(posts) { postUiState ->
-                            val userName = user!!.username.toString()
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = colorResource(id = R.color.citric)
-                                ),
-                                elevation = CardDefaults.cardElevation(4.dp)
-                            ) {
-                                Box(modifier = Modifier.padding(12.dp)) {
-                                    PostItem(
-                                        post = postUiState.post,
-                                        userName = userName,
-                                        onLikeClick = {
-                                            postViewModel.toggleLike(user!!.uid.toString(), postUiState.post)
-                                        },
-                                        isLiked = postUiState.isLiked,
-                                        likeCount = postUiState.likeCount
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-                if (loading) {
-                    CircularProgressIndicator(
-                        color = colorResource(id = R.color.sand_storm),
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp)
-                    )
-                }
-
-                if (loadingProfile) {
-                    CircularProgressIndicator(
-                        color = colorResource(id = R.color.sand_storm),
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp)
-                    )
-                }
-
-                if (error != null) {
-                    Text(
-                        text = error ?: "",
-                        color = Color.Red,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
-        } else {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    color = colorResource(id = R.color.sand_storm),
-                    modifier = Modifier.padding(top = 16.dp)
-                )
             }
         }
+    } else if (error != null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Error: $error", color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center, modifier = Modifier.padding(16.dp))
+        }
+    } else {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = sandStormColor)
+        }
     }
+}

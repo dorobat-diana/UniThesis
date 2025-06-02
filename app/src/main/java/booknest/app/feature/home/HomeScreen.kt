@@ -3,10 +3,13 @@ package booknest.app.feature.home
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -105,12 +108,17 @@ fun HomeScreen(navController: NavHostController) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = colorResource(id = R.color.citric)
-                        ),
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 12.dp)
+                            .shadow(
+                                elevation = 20.dp, // Higher elevation = deeper shadow
+                                shape = RoundedCornerShape(16.dp), // More curve = softer shadow edge
+                                ambientColor = Color.Black.copy(alpha = 0.6f), // Darker ambient shadow
+                                spotColor = Color.Black.copy(alpha = 0.6f) // Darker directional shadow
+                            ),
+                        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.burn_red)),
+                        elevation = CardDefaults.cardElevation(0.dp) // Remove default elevation to avoid doubling
+                    ){
                         Box(modifier = Modifier.padding(12.dp)) {
                             PostItem(
                                 post = postUiState.post,

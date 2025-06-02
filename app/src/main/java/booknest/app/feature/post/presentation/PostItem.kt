@@ -79,7 +79,7 @@ fun PostItem(
                 Icon(
                     imageVector = Icons.Default.ThumbUp,
                     contentDescription = "Like",
-                    tint = if (isLiked) Color(ContextCompat.getColor(context, R.color.ic_launcher_background)) else Color.Gray
+                    tint = if (isLiked) Color(ContextCompat.getColor(context, R.color.selected)) else Color(ContextCompat.getColor(context, R.color.unselected))
                 )
             }
 
