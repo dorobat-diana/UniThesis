@@ -1,15 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.BookNestApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
+    <style name="Base.Theme.TripTag" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <!-- !!!!Warnning  for devises older than api31 you will get error-->
         <item
             name="android:windowSplashScreenBackground"
             tools:targetApi="31">@color/splash_screen_background</item>
     </style>
 
-    <style name="Theme.BookNestApp" parent="Base.Theme.BookNestApp" >
+    <style name="Theme.TripTag" parent="Base.Theme.TripTag" >
 
         <!-- Background -->
         <item name="android:windowBackground">@color/burn_red</item>
@@ -28,7 +26,6 @@
 
         <!-- For Material 3 -->
         <item name="android:colorPrimaryDark">@color/citric</item>
-        <!-- Fix focus color for TextInputLayout -->
         <item name="colorControlActivated">@color/sand_storm</item>
         <item name="colorControlNormal">@color/sand_storm</item>
         <item name="colorControlHighlight">@color/sand_storm</item>

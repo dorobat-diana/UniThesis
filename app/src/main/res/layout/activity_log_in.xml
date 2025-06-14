@@ -135,7 +135,7 @@
       android:focusable="true"
       android:fontFamily="serif"
       android:text="Don't have an account? Register here"
-      android:textAppearance="@style/Theme.BookNestApp"
+      android:textAppearance="@style/Theme.TripTag"
       android:textColor="@color/sand_storm"
       android:textColorHighlight="@color/citric"
       android:textColorHint="@color/citric"

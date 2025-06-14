@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "booknest.app"
+    namespace = "triptag.app"
     compileSdk = 35
 
     buildFeatures {
@@ -18,7 +18,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "booknest.app"
+        applicationId = "triptag.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
