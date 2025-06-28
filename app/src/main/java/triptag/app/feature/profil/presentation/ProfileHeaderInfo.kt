@@ -58,7 +58,7 @@ fun ProfileHeaderInfo(
     ) {
         Box(
             modifier = Modifier
-                .size(96.dp)
+                .size(80.dp)
                 .clip(CircleShape)
                 .clickable(enabled = isOwnProfile) {
                     if (isOwnProfile) {
