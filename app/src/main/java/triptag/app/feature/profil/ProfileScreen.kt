@@ -52,6 +52,12 @@ fun ProfileScreen(
     var editedUsername by remember { mutableStateOf("") }
     var editedCaption by remember { mutableStateOf("") }
 
+    // Assuming postUiState.post.timestamp is a Long representing milliseconds since epoch
+    val sortedPosts = remember(posts) {
+        posts.sortedByDescending { it.post.timestamp } // Descending for newest first
+    }
+
+
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmap ->
             bitmap?.let {
@@ -189,7 +195,7 @@ fun ProfileScreen(
                 }
             } else {
                 items(
-                    posts,
+                    sortedPosts,
                     key = {
                         it.post.uid ?: java.util.UUID.randomUUID().toString()
                     }) { postUiState ->

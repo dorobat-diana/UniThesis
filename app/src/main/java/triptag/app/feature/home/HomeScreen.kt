@@ -36,6 +36,11 @@ fun HomeScreen(navController: NavHostController) {
 
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
 
+    // Assuming postUiState.post.timestamp is a Long representing milliseconds since epoch
+    val sortedPosts = remember(posts) {
+        posts.sortedByDescending { it.post.timestamp } // Descending for newest first
+    }
+
     val userId = FirebaseAuth.getInstance().currentUser?.uid
     LaunchedEffect(userId) {
         userId?.let {
@@ -104,7 +109,7 @@ fun HomeScreen(navController: NavHostController) {
                     }
                 }
             } else {
-                items(posts) { postUiState ->
+                items(sortedPosts) { postUiState ->
                     val friendName = userMap[postUiState.post.userId]?.username ?: "Unknown"
                     Card(
                         modifier = Modifier
